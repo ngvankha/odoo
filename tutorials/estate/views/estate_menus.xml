@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_estate_root" name="Estate" sequence="10" />
+
+    <menuitem id="menu_estate_advertisement" name="Advertisements" parent="menu_estate_root"
+        sequence="20" />
+
+    <menuitem id="menu_estate_settings" name="Settings" parent="menu_estate_root"
+        sequence="30" />
+
+    <menuitem id="menu_estate_property" name="Properties" parent="menu_estate_advertisement"
+        action="action_estate_property" sequence="30" />
+
+    <!-- chapter 8-->
+    <!-- Add new menu item for Property Types -->
+    <menuitem id="menu_estate_property_type" name="Property Types" parent="menu_estate_settings"
+        action="action_estate_property_type" sequence="10" />
+</odoo>
