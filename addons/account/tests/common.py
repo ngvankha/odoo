@@ -179,6 +179,18 @@ class AccountTestInvoicingCommon(ProductCommon):
         cls.outbound_payment_method_line = bank_journal.outbound_payment_method_line_ids[0]
         cls.outbound_payment_method_line.payment_account_id = out_outstanding_account
 
+        # user with restricted groups
+        cls.simple_accountman = cls.env['res.users'].create({
+            'name': 'simple accountman',
+            'login': 'simple_accountman',
+            'password': 'simple_accountman',
+            'groups_id': [
+                # the `account` specific groups from get_default_groups()
+                Command.link(cls.env.ref('account.group_account_manager').id),
+                Command.link(cls.env.ref('account.group_account_user').id),
+            ],
+        })
+
     @classmethod
     def change_company_country(cls, company, country):
         company.country_id = country
@@ -290,6 +302,8 @@ class AccountTestInvoicingCommon(ProductCommon):
                     *account_company_domain,
                     ('account_type', '=', 'liability_payable')
                 ], limit=1),
+            'default_tax_account_receivable': company.account_purchase_tax_id.tax_group_id.tax_receivable_account_id,
+            'default_tax_account_payable': company.account_sale_tax_id.tax_group_id.tax_payable_account_id,
             'default_account_assets': AccountAccount.search([
                     *account_company_domain,
                     ('account_type', '=', 'asset_fixed')
@@ -885,6 +899,12 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
             'tax_group_id': self._jsonify_tax_group(tax.tax_group_id),
         }
 
+    def _jsonify_country(self, country):
+        return {
+            'id': country.id,
+            'code': country.code,
+        }
+
     def _jsonify_currency(self, currency):
         return {
             'id': currency.id,
@@ -935,6 +955,7 @@ class TestTaxCommon(AccountTestInvoicingHttpCommon):
         return {
             'id': company.id,
             'tax_calculation_rounding_method': company.tax_calculation_rounding_method,
+            'account_fiscal_country_id': self._jsonify_country(company.account_fiscal_country_id),
             'currency_id': self._jsonify_currency(company.currency_id),
         }
 
