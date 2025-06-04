@@ -43,7 +43,7 @@ class AiBot:
         )
 
         service = OpenAIChatCompletion(
-                ai_model_id="meta-llama-3.1-8b-instruct",
+                ai_model_id="vistral-7b-chat-dpo",
                 service_id=self.service_id,
                 async_client=openAIClient
             )
@@ -54,11 +54,11 @@ class AiBot:
         settings = self._kernel.get_prompt_execution_settings_from_service_id(service_id=self.service_id)
         settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
         self._agent = ChatCompletionAgent(
-                service_id=self.service_id,
+                # service_id=self.service_id, 
                 kernel=self._kernel,
                 name=AiBot.AGENT_NAME,
                 instructions=AiBot.AGENT_INSTRUCTIONS,
-                execution_settings=settings
+                # execution_settings=settings 
             )
 
         self._chat_history = ChatHistory()
