@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 freezegun
 ~~~~~~~~
@@ -7,12 +6,13 @@ freezegun
 
 """
 from .api import freeze_time
+from .config import configure
 
 __title__ = 'freezegun'
-__version__ = '0.3.15'
+__version__ = '1.2.1'
 __author__ = 'Steve Pulec'
 __license__ = 'Apache License 2.0'
 __copyright__ = 'Copyright 2012 Steve Pulec'
 
 
-__all__ = ["freeze_time"]
+__all__ = ["freeze_time", "configure"]
