@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Optional
 
-from semantic_kernel.utils.experimental_decorator import experimental_class
+# from semantic_kernel.utils.experimental_decorator import experimental_class
 
 import chromadb
 import chromadb.config
@@ -10,7 +10,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 
 from semantic_kernel.connectors.memory.chroma.chroma_memory_store import ChromaMemoryStore
 
-@experimental_class
+# @experimental_class
 class ChromaMemoryStoreExt(ChromaMemoryStore):
     def __init__(
         self,

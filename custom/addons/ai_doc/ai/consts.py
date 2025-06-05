@@ -1,7 +1,7 @@
 API_KEY = "-lm-studio-"
 BASE_URL = "http://localhost:1234/v1"
-AI_MODEL = "qwen2.5-7b-instruct"
-EMBEDDING_MODEL = "text-embedding-nomic-embed-text-v1.5"
+AI_MODEL = "qwen/qwen3-4b"
+EMBEDDING_MODEL = "text-embedding-nomic-embed-text-v1.5-embedding"
 DEFAULT_HEADER = { 'Connection': 'close' }
 CHROMA_DB_DIR = "D:\\Odoo\\18.0.ai\\chromadb"
 
@@ -12,3 +12,4 @@ ODOO_DOC_RELEVANCE_PARAM = "relevance"
 ODOO_DOC_DEFAULT_LIMIT = 1
 
 EMBEDDING_SERVICE_ID = "odoo_doc_embedding"
+ 

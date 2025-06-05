@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+THIS FILE IS A PART OF PUBLIC REPOSITORY https://github.com/yonitjio/exploring-odoo
+
+This software is released under the MIT License.
+https://opensource.org/licenses/MIT
+
+THIS SOFTWARE IS EXPERIMENTAL AND FOR EDUCATIONAL PURPOSE ONLY.
+DO NOT USE IT IN PRODUCTION.
+-->
+<templates xml:space="preserve">
+    <t t-name="ai_chat_base.AiChat">
+        <div class="d-flex flex-column h-100 w-100">
+            <div class="ai-chat-messages flex-fill border p-2 mb-2 overflow-y-auto">
+                <t t-foreach="this.store.messages" t-as="message" t-key="message_index">
+                    <AiMessage
+                        name="message.name"
+                        role="message.role"
+                        message="message.message"
+                        avatar="message.avatar"
+                        isProcessing="message.isProcessing"
+                    />
+                </t>
+                <div class="ai-chat-messages-anchor"></div>
+            </div>
+            <div class="d-flex">
+                <input
+                    t-ref="ai-chat-input"
+                    type="text"
+                    class="ai-chat-input me-2 flex-grow-1"
+                    placeholder="Enter your message..."
+                    t-att-disabled="props.isProcessing"
+                    t-on-keydown="onKeydown" />
+                <button
+                    t-attf-class="ai-chat-send-btn btn btn-secondary {{ props.isProcessing ? 'disabled' : ''}}"
+                    t-on-click="sendMessage">
+                    Send
+                </button>
+            </div>
+        </div>
+    </t>
+</templates>

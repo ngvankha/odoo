@@ -1,0 +1,130 @@
+// THIS FILE IS A PART OF PUBLIC REPOSITORY https://github.com/yonitjio/exploring-odoo
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+// 
+// THIS SOFTWARE IS EXPERIMENTAL AND FOR EDUCATIONAL PURPOSE ONLY.
+// DO NOT USE IT IN PRODUCTION.
+
+// adapted from https://codepen.io/sajadhsm/pen/odaBdd
+.ai-chat-messages
+{
+    overflow-y: scroll;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y proximity;
+
+    & *{
+        overflow-anchor: none;
+    }
+
+    & .ai-chat-messages-anchor {
+        overflow-anchor: auto;
+        height: 1px;
+    }
+}
+
+.ai-chat-message {
+    --assistant-chat-item-bg: #0d4c44;
+    --user-chat-item-bg: #5f5015;
+
+    color: #ffffff;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+
+.ai-chat-message:last-of-type {
+    margin: 0;
+}
+
+.ai-chat-message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #0000;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.ai-chat-message-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.ai-chat-message-info-name {
+    font-weight: bold;
+}
+
+.ai-chat-message-box {
+    max-width: 80%;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.assistant .ai-chat-message-box {
+    background-color: var(--assistant-chat-item-bg);
+    border-bottom-left-radius: 0;
+}
+
+.assistant .ai-chat-message-avatar {
+    margin: 0 10px 0 0;
+}
+
+.assistant .ai-chat-message-info {
+    justify-content: start;
+}
+
+.user {
+    flex-direction: row-reverse;
+}
+
+.user .ai-chat-message-box {
+    background: var(--user-chat-item-bg);
+    border-bottom-right-radius: 0;
+}
+
+.user .ai-chat-message-avatar {
+    margin: 0 0 0 10px;
+}
+
+.user .ai-chat-message-info {
+    justify-content: end;
+}
+
+.ai-chat-message-text {
+    overflow-x: hidden;
+}
+
+//  loadin animated adapted from  https://css-loaders.com/pulsing/
+.assistant .loading {
+    width: 36px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    // background: #fff;
+    box-shadow: 0 0 0 0 #fff4;
+    animation: loading 1.5s infinite linear;
+    position: relative;
+}
+
+.assistant .loading:before,
+.assistant .loading:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 #fff4;
+    animation: inherit;
+    animation-delay: -0.5s;
+}
+
+.assistant .loading:after {
+    animation-delay: -1s;
+}
+
+@keyframes loading {
+    100% {
+        box-shadow: 0 0 0 40px #fff0
+    }
+}
