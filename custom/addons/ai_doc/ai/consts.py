@@ -3,7 +3,7 @@ BASE_URL = "http://localhost:1234/v1"
 AI_MODEL = "qwen/qwen3-4b"
 EMBEDDING_MODEL = "text-embedding-nomic-embed-text-v1.5-embedding"
 DEFAULT_HEADER = { 'Connection': 'close' }
-CHROMA_DB_DIR = "D:\\Odoo\\18.0.ai\\chromadb"
+CHROMA_DB_DIR = "C:\\Odoo\\18.0.ai\\chromadb"
 
 ODOO_DOC_COLLECTION = "odoo_doc"
 ODOO_DOC_COLLECTION_PARAM = "collection"

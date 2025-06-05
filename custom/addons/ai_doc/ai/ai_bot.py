@@ -122,11 +122,11 @@ Make sure you have use the odoo_documentation-search tool for Odoo related inqui
         settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
 
         self._agent = ChatCompletionAgent(
-                service_id=self._service_id,
+                # service_id=self._service_id,
                 kernel=self._kernel,
                 name=AiBot.AGENT_NAME,
                 instructions=AiBot.AGENT_INSTRUCTIONS,
-                execution_settings=settings
+                # execution_settings=settings
             )
 
         self._chat_history = ChatHistory()

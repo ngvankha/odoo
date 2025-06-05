@@ -47,11 +47,11 @@ class Summarizer:
         settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
 
         self._agent = ChatCompletionAgent(
-                service_id=self._service_id,
+                # service_id=self._service_id,
                 kernel=self._kernel,
                 name=Summarizer.AGENT_NAME,
                 instructions=Summarizer.AGENT_INSTRUCTIONS,
-                execution_settings=settings
+                # execution_settings=settings
             )
 
         self._chat_history = ChatHistory()
