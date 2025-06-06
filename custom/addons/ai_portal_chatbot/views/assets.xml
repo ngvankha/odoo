@@ -1,0 +1,7 @@
+<odoo>
+    <template id="ai_portal_chatbot_assets" inherit_id="portal.assets_frontend">
+        <xpath expr="." position="inside">
+            <script type="module" src="/ai_portal_chatbot/static/src/js/portal_chatbot.js" />
+        </xpath>
+    </template>
+</odoo>

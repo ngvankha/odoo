@@ -1,0 +1,8 @@
+<odoo>
+    <template id="portal_chatbot_snippet" inherit_id="portal.frontend_layout">
+        <xpath expr="//body" position="inside">
+            <div id="ai_portal_chatbot_sidebar"
+                style="position: fixed; bottom: 24px; right: 24px; z-index: 10000;"></div>
+        </xpath>
+    </template>
+</odoo>
