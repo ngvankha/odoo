@@ -6,7 +6,7 @@
         "bus",
         "ai_chat_base"
     ],
-    "author": "Yoni Tijo",
+    "author": "vankha",
     "category": "Customizations",
     "description": """
             Portal AI Chatbot

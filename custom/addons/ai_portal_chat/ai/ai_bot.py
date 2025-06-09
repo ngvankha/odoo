@@ -30,6 +30,8 @@ from . import consts
 from . import async_utils
 from . import embedding_utils
 
+from . import utils
+
 # endregion
 
 class AiBot:

@@ -9,9 +9,8 @@
 
 
 
-
-
-
+import { registry } from "@web/core/registry";
+import { rpc } from "@web/core/network/rpc";
 
 const aiChatService = {
     dependencies: ["orm", "localization"],
@@ -41,7 +40,7 @@ const aiChatService = {
     const root = this.initialize(env);
     
     async function chat(channel, message, history, { context = {}, streaming = false } = {}) {
-        const res = await rpc("/ai_portal_chat/chat", {
+        const res = await rpc("/ai_portal_chat/stream", {
             "channel": channel,
             "message": message,
             "history": history,
