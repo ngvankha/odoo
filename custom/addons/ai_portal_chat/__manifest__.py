@@ -12,48 +12,39 @@
             Portal AI Chatbot
         """,
     "assets": {
-        "ai_portal_chat_base": [
-            "web/static/lib/dompurify/DOMPurify.min.js",
+        "ai_portal_chat.base": [
+            "web/static/lib/dompurify/DOMPurify.js",
             "ai_chat_base/static/lib/marked.umd.min.js",
             "ai_chat_base/static/lib/highlight/highlight.js",
             "ai_chat_base/static/lib/highlight/styles/base16/solarized-dark.css",
             "ai_chat_base/static/lib/marked-highlight.umd.js",
-            "ai_chat_base/static/src/**/*"
+            "ai_chat_base/static/src/**/*",
         ],
-        "ai_portal_chat_assets": [
-            {
-                "include": "web._assets_helpers"
-            },
-            {
-                "include": "web._assets_backend_helpers"
-            },
+        "ai_portal_chat.assets": [
+            ("include", "web._assets_helpers"),
+            ("include", "web._assets_backend_helpers"),
             "web/static/src/scss/pre_variables.scss",
             "web/static/lib/bootstrap/scss/_variables.scss",
             "web/static/lib/bootstrap/scss/_variables-dark.scss",
             "web/static/lib/bootstrap/scss/_maps.scss",
-            {
-                "include": "web._assets_bootstrap_overridden"
-            },
+            ("include", "web._assets_bootstrap_backend"),
             "web/static/src/scss/bootstrap_overridden.scss",
             "web/static/src/scss/ui.scss",
             "web/static/src/libs/fontawesome/css/font-awesome.css",
             "web/static/lib/odoo_ui_icons/style.css",
             "web/static/src/webclient/webclient.scss",
-            {
-                "include": "web._assets_core"
-            },
+            ("include", "web._assets_core"),
             "web/static/src/scss/mimetypes.scss",
+            
             "ai_chat_base/static/lib/highlight/styles/base16/solarized-dark.css",
             "ai_chat_base/static/src/**/*.scss",
             "ai_portal_chat/static/scss/**/*"
-            ],
-        "web._assets_frontend": [
-            {
-                "include": "ai_portal_chat_base"
-            },
-            "ai_portal_chat/static/scss/**/*",
+        ],
+        "web.assets_frontend": [
+            ("include", "ai_portal_chat.base"),
+            "ai_portal_chat/static/scss/*",
             "ai_portal_chat/static/src/**/*"
-        ]
+        ],
     },
     "application": False,
     "installable": True,

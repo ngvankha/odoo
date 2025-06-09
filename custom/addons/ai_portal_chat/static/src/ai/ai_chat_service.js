@@ -9,7 +9,7 @@
 
 
 
-import { registry } from "@web/core/registry";
+import { registry } from "@web/core/registry";    
 import { rpc } from "@web/core/network/rpc";
 
 const aiChatService = {

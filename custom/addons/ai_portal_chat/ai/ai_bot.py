@@ -55,7 +55,7 @@ class AiBot:
         if context is not None:
             if "content" in context and "base_url" in context:
                 try:
-                    content = html_tp_md(context["base_url"], context["content"])
+                    content = utils.html_tp_md(context["base_url"], context["content"])
                     blog_instruction = dedent(f"""
                         # Context: the user is browing on a web page.
                         # Web page content: {content}
