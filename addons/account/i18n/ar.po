@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-30 18:36+0000\n"
+"POT-Creation-Date: 2025-06-06 18:37+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
 "Last-Translator: Malaz Abuidris <msea@odoo.com>, 2025\n"
 "Language-Team: Arabic (https://app.transifex.com/odoo/teams/41243/ar/)\n"
@@ -223,6 +223,9 @@ msgid ""
 "\"%(receivable)s\" or \"%(payable)s\" with both options "
 "\"%(allow_reconciliation)s\" and \"%(non_trade)s\" enabled."
 msgstr ""
+"الحساب %(tax_account)s (%(account_name)s) يجب أن يكون نوعه إما "
+"\"%(receivable)s\" أو \"%(payable)s\" مع تفعيل كلا الخيارين "
+"\"%(allow_reconciliation)s\" و \"%(non_trade)s\". "
 
 #. module: account
 #. odoo-python
@@ -1491,6 +1494,8 @@ msgid ""
 "<strong>Warning:</strong> Once the Audit Trail is enabled, it cannot be "
 "disabled again if there are any existing journal items."
 msgstr ""
+"<strong>تحذير:</strong> بمجرد أن يتم تفعيل سجل المراجعة، لن تتمكن من تعطيله "
+"مجدداً إذا كات هناك أي عناصر يومية موجودة. "
 
 #. module: account
 #. odoo-python
@@ -1535,6 +1540,8 @@ msgid ""
 "A bank account with Account Number %(number)s already exists for Partner "
 "%(partner)s, but is archived. Please unarchive it instead."
 msgstr ""
+"يوجد حساب بنكي بالفعل يحمل رقم الحساب %(number)s للشريك %(partner)s، ولكنه "
+"مؤرشف. يرجى إلغاء أرشفته عوضاً عن ذلك. "
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_bank_statement_tree
@@ -18543,14 +18550,6 @@ msgstr ""
 "لا يمكنك تصديق فاتورة عميل بها مبلغ كلي سلبي. عليك إنشاء إشعار دائن عوضاً عن"
 " ذلك. استخدم قائمة الإجراءات لتحويلها إلى إشعار دائن أو عملية استرداد "
 "الأموال. "
-
-#. module: account
-#. odoo-python
-#: code:addons/account/models/partner.py:0
-msgid ""
-"You do not have permission to mark this partner as the main commercial "
-"partner."
-msgstr ""
 
 #. module: account
 #. odoo-python

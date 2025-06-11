@@ -37,8 +37,8 @@
 # Ivan Espinola, 2025
 # marcescu, 2025
 # EstudiTIC - estuditic.com <odoo@estuditic.com>, 2025
-# Santiago Payà <santiagopim@gmail.com>, 2025
 # Wil Odoo, 2025
+# Santiago Payà <santiagopim@gmail.com>, 2025
 # Noemi Pla, 2025
 # 
 msgid ""
@@ -14952,7 +14952,7 @@ msgstr "Taules de classificació Charts & Tax"
 #. module: base
 #: model:ir.model.fields,field_description:base.field_res_users_identitycheck__auth_method
 msgid "Auth Method"
-msgstr ""
+msgstr "Mètode d'autenticació"
 
 #. module: base
 #. odoo-python
@@ -31878,7 +31878,7 @@ msgstr "Empreses: %(category)s"
 #. module: base
 #: model:ir.module.module,shortdesc:base.module_auth_passkey
 msgid "Passkeys"
-msgstr ""
+msgstr "Claus d'accés"
 
 #. module: base
 #: model:ir.model.fields,field_description:base.field_ir_mail_server__smtp_pass
@@ -32695,7 +32695,7 @@ msgstr "Privacitat"
 #. module: base
 #: model_terms:ir.ui.view,arch_db:base.res_partner_view_form_private
 msgid "Private Address Form"
-msgstr "Forma de direcció privada."
+msgstr "Forma de adreça privada."
 
 #. module: base
 #. odoo-python
@@ -35904,7 +35904,7 @@ msgstr "Mostrar monedes inactives"
 #. module: base
 #: model:ir.module.module,summary:base.module_website_google_map
 msgid "Show your company address on Google Maps"
-msgstr "Mostrar la direcció de la teva companyia en google maps"
+msgstr "Mostrar la adreça de la teva companyia en google maps"
 
 #. module: base
 #: model:res.country,name:base.sl
@@ -40417,7 +40417,7 @@ msgid ""
 "modify the input form for addresses."
 msgstr ""
 "Usa aquest camp si vols reemplaçar la manera habitual de codificar els "
-"direccions completes. Tingui en compte que el camp format_direcció és usat "
+"direccions completes. Tingui en compte que el camp address_format és usat "
 "per a modificar la manera de mostrar direccions (en informes per exemple), "
 "mentre que aquest camp és usat per a modificar les entrades per a les "
 "direccions."
