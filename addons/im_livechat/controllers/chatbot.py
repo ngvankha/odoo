@@ -4,6 +4,8 @@ from odoo import http
 from odoo.http import request
 from odoo.addons.mail.models.discuss.mail_guest import add_guest_to_context
 from odoo.addons.mail.tools.discuss import Store
+from odoo.tools import email_normalize, html2plaintext, plaintext2html
+import requests
 
 
 class LivechatChatbotScriptController(http.Controller):
@@ -99,22 +101,44 @@ class LivechatChatbotScriptController(http.Controller):
         discuss_channel = request.env["discuss.channel"].search(
             [("id", "=", channel_id)]
         ).with_context(lang=self._get_chatbot_language())
-        if not discuss_channel or not discuss_channel.chatbot_current_step_id:
-            return None
+        if not discuss_channel:
+            return {"error": "Channel not found"}
 
-        # sudo: chatbot.script - visitor can access chatbot script of their channel
-        chatbot = discuss_channel.sudo().chatbot_current_step_id.chatbot_script_id
-        user_messages = discuss_channel.message_ids.filtered(
-            lambda message: message.author_id != chatbot.operator_partner_id
+        # Lấy tin nhắn mới nhất của user
+        last_user_message = (
+            discuss_channel.message_ids.filtered(
+                lambda m: m.author_id != discuss_channel.chatbot_current_step_id.chatbot_script_id.operator_partner_id
+            )
+            .sorted(lambda m: m.id)[-1]
+            if discuss_channel.message_ids
+            else None
         )
 
-        if user_messages:
-            user_answer = user_messages.sorted(lambda message: message.id)[-1]
-            result = chatbot._validate_email(user_answer.body, discuss_channel)
+        if not last_user_message:
+            return {"error": "No user message found"}
 
-            if posted_message := result.pop("posted_message"):
-                result["data"] = Store(posted_message, for_current_user=True).get_result()
-        return result
+        user_text = html2plaintext(last_user_message.body)
+
+        # Gửi đến webhook n8n
+        try:
+            response = requests.post(
+                "http://localhost:5678/webhook-test/234fba59-05b4-47cb-9881-cbf39bbb6d05",
+                json={"text": user_text, "channel_id": channel_id},
+                timeout=5,
+            )
+            reply_data = response.json()
+            bot_reply = reply_data.get("reply", "Tôi chưa có phản hồi.")
+        except Exception as e:
+            bot_reply = f"Đã có lỗi kết nối với hệ thống xử lý: {str(e)}"
+
+        # Gửi tin nhắn bot trả lời vào channel
+        discuss_channel._chatbot_post_message(
+            discuss_channel.chatbot_current_step_id.chatbot_script_id,
+            plaintext2html(bot_reply)
+        )
+
+        return {"success": True, "bot_reply": bot_reply}
+
 
     def _get_chatbot_language(self):
         return request.env["chatbot.script"]._get_chatbot_language()

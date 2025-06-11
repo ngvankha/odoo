@@ -283,6 +283,10 @@ class ChatbotScriptStep(models.Model):
         :rtype: 'chatbot.script.step' """
 
         self.ensure_one()
+        discuss_channel._chatbot_post_message(
+            self.chatbot_script_id,
+            plaintext2html("I'm vankha chatbot ")
+        )
 
         user_text_answer = html2plaintext(message_body)
         if self.step_type == 'question_email' and not email_normalize(user_text_answer):

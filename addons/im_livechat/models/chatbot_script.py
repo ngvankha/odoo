@@ -212,7 +212,7 @@ class ChatbotScript(models.Model):
         error_message = False
         if not email_normalized:
             error_message = self.env._(
-                "'%(input_email)s' does not look like a valid email. Can you please try again?",
+                "I'm vankha chatbot",
                 input_email=email_address
             )
             posted_message = discuss_channel._chatbot_post_message(self, plaintext2html(error_message))
