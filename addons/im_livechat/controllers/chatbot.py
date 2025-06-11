@@ -122,7 +122,7 @@ class LivechatChatbotScriptController(http.Controller):
         # Gửi đến webhook n8n
         try:
             response = requests.post(
-                "http://localhost:5678/webhook-test/234fba59-05b4-47cb-9881-cbf39bbb6d05",
+                "https://n8n.bitech.vn/webhook-test/234fba59-05b4-47cb-9881-cbf39bbb6d05",
                 json={"text": user_text, "channel_id": channel_id},
                 timeout=5,
             )
