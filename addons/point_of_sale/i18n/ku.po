@@ -215,7 +215,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:product.attribute.value,name:point_of_sale.product_attribute_value_42
 msgid "42"
-msgstr ""
+msgstr "42"
 
 #. module: point_of_sale
 #: model:product.attribute.value,name:point_of_sale.product_attribute_value_43
@@ -559,7 +559,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_payment__account_move_id
 msgid "Account Move"
-msgstr ""
+msgstr "جوڵەی هەژمار"
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_pos_session__bank_payment_ids
@@ -2900,7 +2900,7 @@ msgstr ""
 #: code:addons/point_of_sale/static/src/app/screens/payment_screen/payment_screen.js:0
 #: code:addons/point_of_sale/static/src/app/store/pos_store.js:0
 msgid "Error"
-msgstr ""
+msgstr "هەڵە"
 
 #. module: point_of_sale
 #. odoo-python
@@ -8240,7 +8240,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order_line__price_unit
 msgid "Unit Price"
-msgstr ""
+msgstr "نرخی یەکە"
 
 #. module: point_of_sale
 #: model_terms:ir.ui.view,arch_db:point_of_sale.view_pos_pos_form
@@ -8386,7 +8386,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/app/screens/payment_screen/payment_screen.xml:0
 msgid "Validate"
-msgstr ""
+msgstr "چەسپاندن"
 
 #. module: point_of_sale
 #: model:product.template,description_sale:point_of_sale.product_green_hood_product_template
@@ -8398,7 +8398,7 @@ msgstr ""
 #. module: point_of_sale
 #: model:ir.model,name:point_of_sale.model_ir_ui_view
 msgid "View"
-msgstr ""
+msgstr "بینین"
 
 #. module: point_of_sale
 #: model:product.template,description_sale:point_of_sale.jean_jacket_product_template
@@ -8448,7 +8448,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/app/screens/payment_screen/payment_screen.js:0
 msgid "Warning"
-msgstr ""
+msgstr "ئاگادار کردنەوە"
 
 #. module: point_of_sale
 #. odoo-python
@@ -8469,13 +8469,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_order__website_message_ids
 #: model:ir.model.fields,field_description:point_of_sale.field_pos_session__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "پەیامەکانی ماڵپەڕ"
 
 #. module: point_of_sale
 #: model:ir.model.fields,help:point_of_sale.field_pos_order__website_message_ids
 #: model:ir.model.fields,help:point_of_sale.field_pos_session__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "مێژووی پەیوەندی ماڵپەڕ"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -8818,7 +8818,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/point_of_sale/controllers/main.py:0
 msgid "by Email"
-msgstr ""
+msgstr "لە ڕێگەی ئیمەیڵەوە"
 
 #. module: point_of_sale
 #. odoo-javascript
@@ -8936,13 +8936,13 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/app/screens/receipt_screen/receipt/order_receipt.xml:0
 msgid "on"
-msgstr ""
+msgstr "لەسەر"
 
 #. module: point_of_sale
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/backend/pos_kanban_view/pos_kanban_view.xml:0
 msgid "or"
-msgstr ""
+msgstr "یان"
 
 #. module: point_of_sale
 #. odoo-javascript

@@ -78,6 +78,7 @@ class AccountTaxGroup(models.Model):
             for field_name in ('tax_payable_account_id', 'tax_receivable_account_id'):
                 if group[field_name] and not (
                     group[field_name].account_type in ('asset_receivable', 'liability_payable')
+                    and group[field_name].reconcile
                     and group[field_name].non_trade
                 ):
                     raise ValidationError(
@@ -1989,7 +1990,7 @@ class AccountTax(models.Model):
                 if include_caba_tags or tax.tax_exigibility == 'on_invoice':
                     tax_rep_data['tax_tags'] |= tax_rep.tag_ids
                 if tax.include_base_amount:
-                    tax_rep_data['taxes'] |= subsequent_taxes
+                    tax_rep_data['taxes'] |= subsequent_taxes - tax
                     for other_tax, tags in subsequent_tags_per_tax.items():
                         if tax != other_tax:
                             tax_rep_data['tax_tags'] |= tags

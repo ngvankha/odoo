@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-30 18:36+0000\n"
+"POT-Creation-Date: 2025-06-06 18:37+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
 "Last-Translator: Thi Huong Nguyen, 2025\n"
 "Language-Team: Vietnamese (https://app.transifex.com/odoo/teams/41243/vi/)\n"
@@ -3082,8 +3082,8 @@ msgid ""
 "automatically set when the tax closing entry is posted."
 msgstr ""
 "Bất kỳ bút toán nào có thuế cho đến và bao gồm ngày đó sẽ được hoãn lại đến "
-"một thời gian sau, theo trình tự sổ nhật ký của bút toán đó. Ngày khóa sổ "
-"thuế được tự động thiết lập khi bút toán quyết toán thuế được ghi sổ."
+"một thời gian sau, theo trình tự sổ nhật ký của bút toán đó. Ngày khóa thuế "
+"được tự động thiết lập khi bút toán quyết toán thuế được ghi sổ."
 
 #. module: account
 #. odoo-python
@@ -14769,7 +14769,7 @@ msgstr "Thuế đã bao gồm trong giá"
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__tax_lock_date_message
 #: model:ir.model.fields,field_description:account.field_account_move__tax_lock_date_message
 msgid "Tax Lock Date Message"
-msgstr "Thông báo ngày khoá sổ thuế"
+msgstr "Thông báo ngày khoá thuế"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position__tax_map
@@ -15513,8 +15513,8 @@ msgid ""
 "The date the Tax Lock Date is set to by this exception. If the lock date is "
 "not changed it is set to the maximal date."
 msgstr ""
-"Ngày mà Ngày khóa sổ thuế được cài đặt dựa theo ngoại lệ này. Nếu ngày khóa "
-"sổ không được thay đổi thì ngày đó sẽ được đặt thành ngày tối đa."
+"Ngày mà Ngày khóa thuế được cài đặt dựa theo ngoại lệ này. Nếu ngày khóa sổ "
+"không được thay đổi thì ngày đó sẽ được đặt thành ngày tối đa."
 
 #. module: account
 #. odoo-python
@@ -17561,7 +17561,7 @@ msgstr "User Sale Lock Date"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_company__user_tax_lock_date
 msgid "User Tax Lock Date"
-msgstr "User Tax Lock Date"
+msgstr "Ngày khoá thuế cho người dùng"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_accrued_orders_wizard__currency_id
@@ -18765,14 +18765,6 @@ msgstr ""
 "Bạn không thể xác thực hóa đơn có tổng tiền âm. Thay vào đó, bạn nên tạo một"
 " giấy báo có. Sử dụng menu tác vụ để chuyển đổi thành một giấy báo có hoặc "
 "đơn hoàn tiền."
-
-#. module: account
-#. odoo-python
-#: code:addons/account/models/partner.py:0
-msgid ""
-"You do not have permission to mark this partner as the main commercial "
-"partner."
-msgstr ""
 
 #. module: account
 #. odoo-python

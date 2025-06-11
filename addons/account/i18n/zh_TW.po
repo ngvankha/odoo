@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-30 18:36+0000\n"
+"POT-Creation-Date: 2025-06-06 18:37+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
 "Last-Translator: Tony Ng, 2025\n"
 "Language-Team: Chinese (Taiwan) (https://app.transifex.com/odoo/teams/41243/zh_TW/)\n"
@@ -1508,7 +1508,7 @@ msgstr "同一個銀行賬戶，只能連結至單一流水賬戶。"
 msgid ""
 "A bank account with Account Number %(number)s already exists for Partner "
 "%(partner)s, but is archived. Please unarchive it instead."
-msgstr ""
+msgstr "合作夥伴 %(partner)s 已有一個銀行賬戶，賬戶號碼為 %(number)s，但該賬戶已封存。請改為將它取消封存。"
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_bank_statement_tree
@@ -2286,7 +2286,7 @@ msgstr "可採取行動的錯誤"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Activate Audit Trail"
-msgstr "啟動審計軌跡"
+msgstr "啟動審計追蹤"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.autopost_bills_wizard
@@ -3168,13 +3168,13 @@ msgstr "審計日誌已啟動"
 #: model:ir.ui.menu,name:account.account_audit_trail_menu
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 msgid "Audit Trail"
-msgstr "審計軌跡"
+msgstr "審計追蹤"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_bank_statement_line__audit_trail_message_ids
 #: model:ir.model.fields,field_description:account.field_account_move__audit_trail_message_ids
 msgid "Audit Trail Messages"
-msgstr "審計軌跡訊息"
+msgstr "審計追蹤訊息"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_report_expression__auditable
@@ -3905,7 +3905,7 @@ msgstr "允許分組付款"
 #. odoo-python
 #: code:addons/account/models/company.py:0
 msgid "Can't disable audit trail when there are existing records."
-msgstr "若有現存記錄，便無法停用審計軌跡。"
+msgstr "若有現存記錄，便無法停用審計追蹤。"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.account_automatic_entry_wizard_form
@@ -4004,7 +4004,7 @@ msgstr "無法從不使用“整合”引擎的明細獲取整合詳細訊息"
 #. odoo-python
 #: code:addons/account/models/account_move_send.py:0
 msgid "Cannot identify the invoices in the generated PDF: %s"
-msgstr ""
+msgstr "未能在產生的 PDF 中辨認發票：%s"
 
 #. module: account
 #: model:account.account,name:account.1_capital
@@ -4270,7 +4270,7 @@ msgstr "項目表"
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_report__availability_condition__coa
 msgid "Chart of Accounts Matches"
-msgstr "會計科目表匹配"
+msgstr "會計賬目總表相符"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_account_list
@@ -4605,7 +4605,7 @@ msgstr "公司增值稅佔位符"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_config_settings__has_chart_of_accounts
 msgid "Company has a chart of accounts"
-msgstr "公司有科目表"
+msgstr "公司有賬目總表"
 
 #. module: account
 #: model:ir.model.fields,help:account.field_account_bank_statement__company_id
@@ -5588,7 +5588,7 @@ msgstr "完稅後交貨"
 #: model:ir.actions.act_window,name:account.open_account_journal_dashboard_kanban
 #: model:ir.ui.menu,name:account.menu_board_journal_1
 msgid "Dashboard"
-msgstr "儀表板"
+msgstr "Dashboard"
 
 #. module: account
 #: model:ir.actions.server,name:account.action_check_hash_integrity
@@ -6632,7 +6632,7 @@ msgstr "EDI 格式"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_config_settings__module_l10n_eu_oss
 msgid "EU Intra-community Distance Selling"
-msgstr "歐盟內部遠端銷售"
+msgstr "歐盟共同體內部跨境銷售"
 
 #. module: account
 #: model:account.incoterms,name:account.incoterm_EXW
@@ -6987,7 +6987,7 @@ msgstr "已排除的日記帳"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_res_company__expects_chart_of_accounts
 msgid "Expects a Chart of Accounts"
-msgstr "預計會計科目表"
+msgstr "預期有會計賬目總表"
 
 #. module: account
 #. odoo-javascript
@@ -6997,7 +6997,7 @@ msgstr "預計會計科目表"
 #: model:ir.model.fields.selection,name:account.selection__account_account__internal_group__expense
 #: model:ir.model.fields.selection,name:account.selection__account_automatic_entry_wizard__account_type__expense
 msgid "Expense"
-msgstr "費用"
+msgstr "開支"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_product_category__property_account_expense_categ_id
@@ -7017,7 +7017,7 @@ msgstr "費用應計科目"
 #: model:ir.model.fields.selection,name:account.selection__account_account__account_type__expense
 #: model_terms:ir.ui.view,arch_db:account.view_account_search
 msgid "Expenses"
-msgstr "費用"
+msgstr "開支"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_lock_exception__state__expired
@@ -8954,7 +8954,7 @@ msgstr "發票/賬單完全相符"
 #: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
 #: model_terms:ir.ui.view,arch_db:account.view_partner_property_form
 msgid "Invoicing"
-msgstr "會計"
+msgstr "發票"
 
 #. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_invoice_report__payment_state__invoicing_legacy
@@ -9892,7 +9892,7 @@ msgstr "建立應計分錄"
 #: model_terms:ir.actions.act_window,help:account.action_account_audit_trail_report
 msgid ""
 "Make sure you first activate the audit trail in the accounting settings"
-msgstr "請確保首先在會計設定中，啟動審計軌跡"
+msgstr "請確保首先在會計設定中，啟動審計追蹤"
 
 #. module: account
 #: model:ir.ui.menu,name:account.account_management_menu
@@ -13652,7 +13652,7 @@ msgstr "序號起首"
 #: model:ir.model.fields.selection,name:account.selection__account_tax__tax_scope__service
 #: model_terms:ir.ui.view,arch_db:account.view_account_tax_search
 msgid "Services"
-msgstr "服務介紹"
+msgstr "服務"
 
 #. module: account
 #: model:onboarding.onboarding.step,title:account.onboarding_onboarding_step_company_data
@@ -14491,7 +14491,7 @@ msgstr "稅項名稱須獨一無二！"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position_tax__tax_src_id
 msgid "Tax on Product"
-msgstr "產品上的稅"
+msgstr "產品稅項"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_fiscal_position_tax__tax_dest_id
@@ -16193,7 +16193,7 @@ msgid ""
 "To keep the audit trail, you can not delete journal entries once they have been posted.\n"
 "Instead, you can cancel the journal entry."
 msgstr ""
-"為保留審計軌跡，日記賬記項在完成過賬後便無法刪除。\n"
+"為保留審計追蹤，日記賬記項在完成過賬後便無法刪除。\n"
 "你可考慮改為取消該日記賬記項。"
 
 #. module: account
@@ -18014,14 +18014,6 @@ msgid ""
 "create a credit note instead. Use the action menu to transform it into a "
 "credit note or refund."
 msgstr "您不能驗證總金額為負的發票. 您應該改建一個退款單. 使用操作功能表將其轉換為退款或退款單."
-
-#. module: account
-#. odoo-python
-#: code:addons/account/models/partner.py:0
-msgid ""
-"You do not have permission to mark this partner as the main commercial "
-"partner."
-msgstr ""
 
 #. module: account
 #. odoo-python
