@@ -124,7 +124,7 @@ class LivechatChatbotScriptController(http.Controller):
             response = requests.post(
                 "https://n8n.bitech.vn/webhook/234fba59-05b4-47cb-9881-cbf39bbb6d05",
                 json={"chatInput": user_text, "sessionId": channel_id},
-                timeout=20,
+                timeout=120,
             )
 
             # Debug: log response details
