@@ -170,6 +170,84 @@ class LivechatChatbotScriptController(http.Controller):
 
         return {"success": True, "bot_reply": bot_reply}
 
+    @http.route("/chatbot/step/ai_chat", type="json", auth="public")
+    @add_guest_to_context
+    def chatbot_ai_chat_process(self, channel_id):
+        """Xử lý AI Chat step"""
+        discuss_channel = request.env["discuss.channel"].search(
+            [("id", "=", channel_id)]
+        ).with_context(lang=self._get_chatbot_language())
+        
+        if not discuss_channel:
+            return {"error": "Channel not found"}
+
+        # Lấy tin nhắn mới nhất của user
+        current_step = discuss_channel.sudo().chatbot_current_step_id
+        if not current_step or current_step.step_type != 'ai_chat':
+            return {"error": "Invalid step type"}
+            
+        last_user_message = (
+            discuss_channel.message_ids.filtered(
+                lambda m: m.author_id != current_step.chatbot_script_id.operator_partner_id
+            )
+            .sorted(lambda m: m.id)[-1]
+            if discuss_channel.message_ids
+            else None
+        )
+
+        if not last_user_message:
+            return {"error": "No user message found"}
+
+        user_text = html2plaintext(last_user_message.body)
+
+        # Gửi đến webhook n8n
+        try:
+            response = requests.post(
+                "https://n8n.bitech.vn/webhook/234fba59-05b4-47cb-9881-cbf39bbb6d05",
+                json={"chatInput": user_text, "sessionId": channel_id},
+                timeout=20,
+            )
+
+            if response.status_code == 200:
+                if not response.text.strip():
+                    bot_reply = "Tôi chưa có phản hồi cho câu hỏi này."
+                else:
+                    content_type = response.headers.get("Content-Type", "")
+                    if "application/json" in content_type:
+                        try:
+                            reply_data = response.json()
+                            if isinstance(reply_data, list) and reply_data:
+                                bot_reply = reply_data[0].get("output", "Tôi chưa có phản hồi.")
+                            elif isinstance(reply_data, dict):
+                                bot_reply = reply_data.get("output", "Tôi chưa có phản hồi.")
+                            else:
+                                bot_reply = f"Định dạng phản hồi không hợp lệ: {reply_data}"
+                        except (ValueError, TypeError) as e:
+                            bot_reply = f"Lỗi xử lý phản hồi: {str(e)}"
+                    else:
+                        bot_reply = response.text
+            else:
+                bot_reply = f"Lỗi kết nối: {response.status_code}"
+
+        except requests.exceptions.RequestException as e:
+            bot_reply = f"Không thể kết nối đến hệ thống AI: {str(e)}"
+        except Exception as e:
+            bot_reply = f"Đã có lỗi xảy ra: {str(e)}"
+
+        # Gửi tin nhắn bot trả lời vào channel
+        posted_message = discuss_channel._chatbot_post_message(
+            current_step.chatbot_script_id,
+            plaintext2html(bot_reply)
+        )
+
+        # Trả về đúng format Store để frontend nhận dạng
+        store = Store(posted_message, for_current_user=True)
+
+        return {
+            "success": True, 
+            "bot_reply": bot_reply,
+            **store.get_result()
+        }
 
     def _get_chatbot_language(self):
         return request.env["chatbot.script"]._get_chatbot_language()

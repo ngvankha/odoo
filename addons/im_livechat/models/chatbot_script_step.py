@@ -30,6 +30,7 @@ class ChatbotScriptStep(models.Model):
         ('forward_operator', 'Forward to Operator'),
         ('free_input_single', 'Free Input'),
         ('free_input_multi', 'Free Input (Multi-Line)'),
+        ('ai_chat', 'AI Chat'), 
     ], default='text', required=True)
     # answers
     answer_ids = fields.One2many(
@@ -283,6 +284,11 @@ class ChatbotScriptStep(models.Model):
         :rtype: 'chatbot.script.step' """
 
         self.ensure_one()
+        
+        # Xử lý đặc biệt cho ai_chat
+        if self.step_type == 'ai_chat':
+            return self._process_ai_chat_answer(discuss_channel, message_body)
+        
         discuss_channel._chatbot_post_message(
             self.chatbot_script_id,
             plaintext2html("I'm vankha chatbot ")
@@ -306,6 +312,22 @@ class ChatbotScriptStep(models.Model):
         # sudo: chatbot.script.answer - visitor can access their own answer
         return self._fetch_next_step(discuss_channel.sudo().chatbot_message_ids.user_script_answer_id)
 
+    def _process_ai_chat_answer(self, discuss_channel, message_body):
+        """Xử lý câu trả lời cho step_type ai_chat"""
+        
+        # Lưu raw answer vào chatbot message
+        chatbot_message = self.env['chatbot.message'].search([
+            ('discuss_channel_id', '=', discuss_channel.id),
+            ('script_step_id', '=', self.id),
+        ], limit=1)
+        
+        if chatbot_message:
+            chatbot_message.write({'user_raw_answer': message_body})
+            self.env.flush_all()
+        
+        # Tiếp tục đến step tiếp theo
+        return self
+        
     def _process_step(self, discuss_channel):
         """ When we reach a chatbot.step in the script we need to do some processing on behalf of
         the bot. Which is for most chatbot.script.step#step_types just posting the message field.

@@ -133,10 +133,40 @@ export class Chatbot extends Record {
             stepCompleted = await this._processAnswerQuestionEmail();
         } else if (this.currentStep.type === "question_selection") {
             stepCompleted = await this._processAnswerQuestionSelection(message);
+        } else if (this.currentStep.type === "ai_chat") {
+        stepCompleted = await this._processAnswerAiChat(message);
         }
         this.currentStep.completed = stepCompleted;
     }
 
+    /**
+     * Process the user answer for an AI chat step.
+     *
+     * @param {import("models").Message} message Answer posted by the user.
+     * @returns {Promise<boolean>} Whether the script is ready to go to the next step.
+     */
+    async _processAnswerAiChat(message) {
+            const response = await rpc("/chatbot/step/ai_chat", {
+            channel_id: this.thread.id,
+        });
+
+        // Xử lý response từ backend
+        if (response && response.success) {
+            // Insert message từ Store data nếu có
+            if (response.Message) {
+                const { Message: messages = [] } = this.store.insert(response, { html: true });
+                if (messages.length > 0) {
+                    this.thread.messages.add(messages[0]);
+                }
+            }
+            
+            // Với ai_chat, ta không chuyển step - cho phép user tiếp tục hỏi
+            return false; // Không completed để user có thể tiếp tục input
+        }
+
+        // Nếu có lỗi, vẫn cho phép tiếp tục
+        return false;
+    }
     /**
      * Process the user answer for a question selection step.
      *

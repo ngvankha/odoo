@@ -26,6 +26,7 @@ export class ChatbotStep extends Record {
             "question_selection",
             "question_email",
             "question_phone",
+            "ai_chat",
         ].includes(this.type);
     }
 }

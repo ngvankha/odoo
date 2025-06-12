@@ -51,6 +51,7 @@ class ChatbotScript(models.Model):
                 'question_phone',
                 'free_input_single',
                 'free_input_multi',
+                'ai_chat', 
             ]
             welcome_steps = script.script_step_ids and script._get_welcome_steps()
             if welcome_steps and welcome_steps[-1].step_type == 'forward_operator':

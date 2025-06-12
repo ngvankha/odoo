@@ -120,7 +120,8 @@ export class ChatBotService {
             !this.chatbot.currentStep?.completed &&
             !this.isTyping &&
             this.chatbot.currentStep?.expectAnswer &&
-            this.chatbot.currentStep?.answers.length === 0
+            (this.chatbot.currentStep?.answers.length === 0 || 
+                this.chatbot.currentStep?.type === 'ai_chat')
         );
     }
 
@@ -136,6 +137,9 @@ export class ChatBotService {
             !this.chatbot.currentStep.completed
         ) {
             return _t("Select an option above");
+        }
+        if (this.chatbot.currentStep?.type === "ai_chat") {
+        return _t("Type your message...");
         }
         return _t("Say something");
     }
