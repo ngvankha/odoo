@@ -123,13 +123,44 @@ class LivechatChatbotScriptController(http.Controller):
         try:
             response = requests.post(
                 "https://n8n.bitech.vn/webhook-test/234fba59-05b4-47cb-9881-cbf39bbb6d05",
-                json={"text": user_text, "channel_id": channel_id},
+                json={"chatInput": user_text, "sessionId": channel_id},
                 timeout=5,
             )
-            reply_data = response.json()
-            bot_reply = reply_data.get("reply", "Tôi chưa có phản hồi.")
+
+            # Debug: log response details
+            print(f"Response status: {response.status_code}")
+            print(f"Response headers: {response.headers}")
+            print(f"Response text: '{response.text}'")
+            print(f"Response text length: {len(response.text)}")
+
+            if response.status_code == 200:
+                if not response.text.strip():
+                    bot_reply = "Webhook trả về phản hồi trống"
+                else:
+                    content_type = response.headers.get("Content-Type", "")
+                    if "application/json" in content_type:
+                        try:
+                            reply_data = response.json()
+                            print(f"Parsed JSON: {reply_data}")
+                            
+                            if isinstance(reply_data, list) and reply_data:
+                                bot_reply = reply_data[0].get("output", "Tôi chưa có phản hồi 1")
+                            elif isinstance(reply_data, dict):
+                                bot_reply = reply_data.get("output", "Tôi chưa có phản hồi 2")
+                            else:
+                                bot_reply = f"Định dạng JSON không mong đợi: {reply_data}"
+                        except (ValueError, TypeError) as e:
+                            bot_reply = f"Lỗi phân tích JSON: {str(e)}. Nội dung phản hồi: '{response.text}'"
+                    else:
+                        bot_reply = f"Webhook không trả về JSON. Content-Type: {content_type}. Nội dung: '{response.text}'"
+            else:
+                bot_reply = f"Lỗi HTTP {response.status_code}: {response.text}"
+
+        except requests.exceptions.RequestException as e:
+            bot_reply = f"Lỗi kết nối HTTP: {str(e)}"
         except Exception as e:
             bot_reply = f"Đã có lỗi kết nối với hệ thống xử lý: {str(e)}"
+
 
         # Gửi tin nhắn bot trả lời vào channel
         discuss_channel._chatbot_post_message(
