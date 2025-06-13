@@ -307,7 +307,7 @@ registerModel({
                 } else if (this.messaging.publicLivechatGlobal.chatbot.currentStep.data.chatbot_step_type === 'free_input_multi') {
                     this.messaging.publicLivechatGlobal.chatbot.debouncedAwaitUserInput();
                 } 
-                // ✅ Thêm xử lý cho AI Chat
+                // Thêm xử lý cho AI Chat
                 else if (this.messaging.publicLivechatGlobal.chatbot.currentStep.data.chatbot_step_type === 'ai_chat') {
                     setTimeout(() => {
                         this.messaging.publicLivechatGlobal.chatbot.processStep();

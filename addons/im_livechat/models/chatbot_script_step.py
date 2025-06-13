@@ -319,13 +319,13 @@ class ChatbotScriptStep(models.Model):
         if self.step_type == 'forward_operator':
             return self._process_step_forward_operator(mail_channel)
 
-            # ✅ Thêm xử lý cho AI Chat
+            # Thêm xử lý cho AI Chat
         if self.step_type == 'ai_chat':
             return self._process_step_ai_chat(mail_channel)
         
         return mail_channel._chatbot_post_message(self.chatbot_script_id, plaintext2html(self.message))
 
-    # ✅ Thêm method xử lý AI Chat step
+    # Thêm method xử lý AI Chat step
     def _process_step_ai_chat(self, mail_channel):
         """ Special type of step that enables AI chat functionality.
         Posts the initial message and waits for user input to process via AI. """

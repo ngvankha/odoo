@@ -126,7 +126,7 @@ class LivechatChatbotScriptController(http.Controller):
         
         chatbot = mail_channel.chatbot_current_step_id.chatbot_script_id
         
-        # ✅ Lấy tin nhắn mới nhất của user
+        # Lấy tin nhắn mới nhất của user
         user_messages = mail_channel.message_ids.filtered(
             lambda message: message.author_id != chatbot.operator_partner_id
         )
@@ -164,7 +164,7 @@ class LivechatChatbotScriptController(http.Controller):
             response.raise_for_status()
             ai_response_data = response.json()
             
-            # ✅ Xử lý response từ n8n
+            # Xử lý response từ n8n
             ai_response_text = ""
             if isinstance(ai_response_data, dict):
                 ai_response_text = (
@@ -177,7 +177,7 @@ class LivechatChatbotScriptController(http.Controller):
             if not ai_response_text.strip():
                 ai_response_text = "I'm sorry, I couldn't generate a response. Please try again."
             
-            # ✅ Post bot reply
+            # Post bot reply
             from odoo.tools import plaintext2html
             posted_message = mail_channel._chatbot_post_message(
                 chatbot,

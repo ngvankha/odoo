@@ -137,7 +137,7 @@ registerModel({
                 this.messaging.publicLivechatGlobal.chatWindow.enableInput();
             } else if (this.isExpectingUserInput) {
                 if (this.messaging.publicLivechatGlobal.isLastMessageFromCustomer) {
-                    // ✅ Xử lý đặc biệt cho AI Chat
+                    // Xử lý đặc biệt cho AI Chat
                     if (this.currentStep.data.chatbot_step_type === 'ai_chat') {
                         this.setIsTyping();
                         this.processAiChatStep().then((success) => {
@@ -344,7 +344,7 @@ registerModel({
             }
         },
         /**
-         * ✅ Thêm method xử lý AI Chat step
+         * hêm method xử lý AI Chat step
          */
         async processAiChatStep() {
             if (!this.messaging.publicLivechatGlobal.isLastMessageFromCustomer) {
@@ -503,7 +503,7 @@ registerModel({
                     'question_email',
                     'free_input_single',
                     'free_input_multi',
-                    'ai_chat',  // ✅ Thêm ai_chat vào list expecting input
+                    'ai_chat',  // Thêm ai_chat vào list expecting input
                 ].includes(this.currentStep.data.chatbot_step_type);
             },
             default: false,
@@ -587,7 +587,7 @@ registerModel({
                     return true;
                 }
                 if (this.currentStep.data.chatbot_step_is_last &&
-                    this.currentStep.data.chatbot_step_type !== 'ai_chat' && // ✅ Bỏ qua AI Chat vì nó không kết thúc script ngay
+                    this.currentStep.data.chatbot_step_type !== 'ai_chat' && // Bỏ qua AI Chat vì nó không kết thúc script ngay
                     (this.currentStep.data.chatbot_step_type !== 'forward_operator' ||
                     !this.currentStep.data.chatbot_operator_found)
                 ) {

@@ -31,7 +31,7 @@ registerModel({
                 .focus();
 
             $composerTextField.off('keydown', this.messaging.publicLivechatGlobal.chatbot.onKeydownInput);
-            // ✅ Enable keydown handling cho AI Chat và free_input_multi
+            // Enable keydown handling cho AI Chat và free_input_multi
             if (this.messaging.publicLivechatGlobal.chatbot.currentStep.data.chatbot_step_type === 'free_input_multi' ||
                 this.messaging.publicLivechatGlobal.chatbot.currentStep.data.chatbot_step_type === 'ai_chat') { 
                 $composerTextField.on('keydown', this.messaging.publicLivechatGlobal.chatbot.onKeydownInput);
