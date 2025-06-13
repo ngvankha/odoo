@@ -587,6 +587,7 @@ registerModel({
                     return true;
                 }
                 if (this.currentStep.data.chatbot_step_is_last &&
+                    this.currentStep.data.chatbot_step_type !== 'ai_chat' && // ✅ Bỏ qua AI Chat vì nó không kết thúc script ngay
                     (this.currentStep.data.chatbot_step_type !== 'forward_operator' ||
                     !this.currentStep.data.chatbot_operator_found)
                 ) {

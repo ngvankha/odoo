@@ -144,15 +144,12 @@ class LivechatChatbotScriptController(http.Controller):
         
         if not user_text.strip():
             return {'success': False, 'error': 'Empty user message'}
-        
         try:
-            # ✅ Gửi đến n8n webhook
             webhook_url = "https://n8n.bitech.vn/webhook/234fba59-05b4-47cb-9881-cbf39bbb6d05"
             
             payload = {
                 "chatInput": user_text,
                 "sessionId": channel_uuid,
-                "userId": mail_channel.anonymous_name or "Anonymous"
             }
             
             _logger.info(f"Sending to n8n: {payload}")
@@ -160,7 +157,7 @@ class LivechatChatbotScriptController(http.Controller):
             response = requests.post(
                 webhook_url,
                 json=payload,
-                timeout=20,
+                timeout=120,
                 headers={'Content-Type': 'application/json'}
             )
             
@@ -170,12 +167,8 @@ class LivechatChatbotScriptController(http.Controller):
             # ✅ Xử lý response từ n8n
             ai_response_text = ""
             if isinstance(ai_response_data, dict):
-                # Thử các key có thể có từ n8n
                 ai_response_text = (
-                    ai_response_data.get('response') or 
-                    ai_response_data.get('answer') or 
                     ai_response_data.get('output') or 
-                    ai_response_data.get('text') or
                     str(ai_response_data)
                 )
             else:

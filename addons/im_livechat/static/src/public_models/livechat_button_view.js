@@ -309,12 +309,9 @@ registerModel({
                 } 
                 // ✅ Thêm xử lý cho AI Chat
                 else if (this.messaging.publicLivechatGlobal.chatbot.currentStep.data.chatbot_step_type === 'ai_chat') {
-                    // Cho AI Chat, chúng ta process ngay lập tức và giữ input enabled
-                    this.messaging.publicLivechatGlobal.chatbot.setIsTyping();
-                    this.messaging.publicLivechatGlobal.chatbot.processAiChatStep().then(() => {
-                        // Sau khi AI trả lời, enable input để user có thể tiếp tục chat
-                        this.messaging.publicLivechatGlobal.chatWindow.enableInput();
-                    });
+                    setTimeout(() => {
+                        this.messaging.publicLivechatGlobal.chatbot.processStep();
+                    }, 300); // delay 300ms để đảm bảo message đã lưu server
                 }
 
                 else if (!this.messaging.publicLivechatGlobal.chatbot.shouldEndScript) {
