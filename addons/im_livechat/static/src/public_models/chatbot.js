@@ -137,6 +137,18 @@ registerModel({
                 this.messaging.publicLivechatGlobal.chatWindow.enableInput();
             } else if (this.isExpectingUserInput) {
                 if (this.messaging.publicLivechatGlobal.isLastMessageFromCustomer) {
+                    // ✅ Xử lý đặc biệt cho AI Chat
+                    if (this.currentStep.data.chatbot_step_type === 'ai_chat') {
+                        this.setIsTyping();
+                        this.processAiChatStep().then((success) => {
+                            if (success) {
+                                // AI đã trả lời, tiếp tục với step hiện tại để chờ input tiếp theo
+                                this.messaging.publicLivechatGlobal.chatWindow.enableInput();
+                            }
+                        });
+                        return;
+                    } 
+                    
                     // user has already typed a message in -> trigger next step
                     this.setIsTyping();
                     this.update({
@@ -332,6 +344,37 @@ registerModel({
             }
         },
         /**
+         * ✅ Thêm method xử lý AI Chat step
+         */
+        async processAiChatStep() {
+            if (!this.messaging.publicLivechatGlobal.isLastMessageFromCustomer) {
+                // Chưa có tin nhắn từ user, chờ input
+                return false;
+            }
+            
+            try {
+                // Gọi API xử lý AI chat
+                const result = await this.messaging.rpc({
+                    route: '/chatbot/step/ai_chat',
+                    params: {
+                        channel_uuid: this.messaging.publicLivechatGlobal.publicLivechat.uuid,
+                    },
+                });
+                
+                if (result.success && result.posted_message) {
+                    this.addMessage(result.posted_message);
+                    return true;
+                } else {
+                    console.error('AI Chat processing failed:', result.error);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error processing AI chat:', error);
+                return false;
+            }
+        },
+
+        /**
          * This method will be transformed into a 'debounced' version (see init).
          *
          * The purpose is to handle steps of type 'free_input_multi', that will let the user type in
@@ -460,6 +503,7 @@ registerModel({
                     'question_email',
                     'free_input_single',
                     'free_input_multi',
+                    'ai_chat',  // ✅ Thêm ai_chat vào list expecting input
                 ].includes(this.currentStep.data.chatbot_step_type);
             },
             default: false,

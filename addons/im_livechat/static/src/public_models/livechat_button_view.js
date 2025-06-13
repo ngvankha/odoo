@@ -306,7 +306,18 @@ registerModel({
                     return; // operator has taken over the conversation, let them speak
                 } else if (this.messaging.publicLivechatGlobal.chatbot.currentStep.data.chatbot_step_type === 'free_input_multi') {
                     this.messaging.publicLivechatGlobal.chatbot.debouncedAwaitUserInput();
-                } else if (!this.messaging.publicLivechatGlobal.chatbot.shouldEndScript) {
+                } 
+                // ✅ Thêm xử lý cho AI Chat
+                else if (this.messaging.publicLivechatGlobal.chatbot.currentStep.data.chatbot_step_type === 'ai_chat') {
+                    // Cho AI Chat, chúng ta process ngay lập tức và giữ input enabled
+                    this.messaging.publicLivechatGlobal.chatbot.setIsTyping();
+                    this.messaging.publicLivechatGlobal.chatbot.processAiChatStep().then(() => {
+                        // Sau khi AI trả lời, enable input để user có thể tiếp tục chat
+                        this.messaging.publicLivechatGlobal.chatWindow.enableInput();
+                    });
+                }
+
+                else if (!this.messaging.publicLivechatGlobal.chatbot.shouldEndScript) {
                     this.messaging.publicLivechatGlobal.chatbot.setIsTyping();
                     this.messaging.publicLivechatGlobal.chatbot.update({
                         nextStepTimeout: setTimeout(
