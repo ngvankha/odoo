@@ -43,55 +43,89 @@ patch(Chatbot.prototype, {
      * This completely overrides the AI chat handling from the original module
      */
     processStep() {
-        if (!this.currentStep || !this.currentStep.data) {
-            return this._super();
-        }
-
-        const stepType = this.currentStep.data.chatbot_step_type;
-        
-        if (stepType === 'ai_chat') {
-            // Handle AI chat step logic
-            if (this.shouldEndScript) {
-                this.endScript();
-                return;
-            }
-
+        if (this.shouldEndScript) {
+            this.endScript();
+        } else if (
+            this.currentStep.data.chatbot_step_type === 'forward_operator' &&
+            this.currentStep.data.chatbot_operator_found
+        ) {
+            this.messaging.publicLivechatGlobal.chatWindow.enableInput();
+        } else if (this.isExpectingUserInput) {
             if (this.messaging.publicLivechatGlobal.isLastMessageFromCustomer) {
-                // User has sent a message, process it with AI
+                // ✅ Xử lý đặc biệt cho AI Chat
+                if (this.currentStep.data.chatbot_step_type === 'ai_chat') {
+                    this.setIsTyping();
+                    this.processAiChatStep().then((success) => {
+                        if (success) {
+                            // AI đã trả lời, tiếp tục với step hiện tại để chờ input tiếp theo
+                            this.messaging.publicLivechatGlobal.chatWindow.enableInput();
+                        }
+                    });
+                    return;
+                } 
+                
+                // user has already typed a message in -> trigger next step
                 this.setIsTyping();
-                this.processAiChatStep().then((success) => {
-                    if (success || !success) {
-                        // After AI response (success or failure), enable input for next user message
-                        this.messaging.publicLivechatGlobal.chatWindow.enableInput();
-                    }
+                this.update({
+                    nextStepTimeout: setTimeout(
+                        this.triggerNextStep,
+                        this.messageDelay,
+                    ),
                 });
             } else {
-                // No user message yet or last message was from bot, enable input
                 this.messaging.publicLivechatGlobal.chatWindow.enableInput();
             }
-            
-            // Don't show restart button during AI chat unless explicitly needed
-            if (!this.hasRestartButton) {
-                this.messaging.publicLivechatGlobal.chatWindow.widget.$('.o_livechat_chatbot_main_restart').hide();
+        } else {
+            let triggerNextStep = true;
+            if (this.currentStep.data.chatbot_step_type === 'question_selection') {
+                if (!this.messaging.publicLivechatGlobal.isLastMessageFromCustomer) {
+                    // if there is no last message or if the last message is from the bot
+                    // -> don't trigger the next step, we are waiting for the user to pick an option
+                    triggerNextStep = false;
+                }
             }
-            
-            return;
+
+            if (triggerNextStep) {
+                let nextStepDelay = this.messageDelay;
+                if (this.messaging.publicLivechatGlobal.chatWindow.widget.$('.o_livechat_chatbot_typing').length !== 0) {
+                    // special case where we already have a "is typing" message displayed
+                    // can happen when the previous step did not trigger any message posted from the bot
+                    // e.g: previous step was "forward_operator" and no-one is available
+                    // -> in that case, don't wait and trigger the next step immediately
+                    nextStepDelay = 0;
+                } else {
+                    this.setIsTyping();
+                }
+
+                this.update({
+                    nextStepTimeout: setTimeout(
+                        this.triggerNextStep,
+                        nextStepDelay,
+                    ),
+                });
+            }
         }
 
-        // Call original processStep for all other step types
-        return this._super();
+        if (!this.hasRestartButton) {
+            this.messaging.publicLivechatGlobal.chatWindow.widget.$('.o_livechat_chatbot_main_restart').hide();
+        }
     },
 
-    /**
-     * Enhanced validation for AI chat steps
-     */
-    get isExpectingUserInput() {
-        if (this.currentStep && this.currentStep.data && 
-            this.currentStep.data.chatbot_step_type === 'ai_chat') {
-            return true;
-        }
-        return this._super.isExpectingUserInput || false;
-    },
+    isExpectingUserInput: attr({
+        compute() {
+            if (!this.currentStep) {
+                return clear();
+            }
+            return [
+                'question_phone',
+                'question_email',
+                'free_input_single',
+                'free_input_multi',
+                'ai_chat',  // ✅ Thêm ai_chat vào list expecting input
+            ].includes(this.currentStep.data.chatbot_step_type);
+        },
+        default: false,
+    }),
 
     /**
      * Enhanced shouldEndScript to handle AI chat steps
