@@ -45,3 +45,23 @@ class ChatbotScript(models.Model):
             'error_message': script.ai_error_message,
             'session_field': script.ai_session_field,
         }
+    
+    @api.depends('script_step_ids.step_type')
+    def _compute_first_step_warning(self):
+        for script in self:
+            allowed_first_step_types = [
+                'question_selection',
+                'question_email',
+                'question_phone',
+                'free_input_single',
+                'free_input_multi',
+                'ai_chat',  # ✅ Thêm loại step AI Chat
+            ]
+            welcome_steps = script.script_step_ids and script._get_welcome_steps()
+            if welcome_steps and welcome_steps[-1].step_type == 'forward_operator':
+                script.first_step_warning = 'first_step_operator'
+            elif welcome_steps and welcome_steps[-1].step_type not in allowed_first_step_types:
+                script.first_step_warning = 'first_step_invalid'
+            else:
+                script.first_step_warning = False
+    
