@@ -19,7 +19,7 @@ class ChatbotScriptStep(models.Model):
         if self.step_type == 'forward_operator':
             return self._process_step_forward_operator(mail_channel)
 
-        # ✅ Thêm xử lý cho AI Chat
+        #  Thêm xử lý cho AI Chat
         if self.step_type == 'ai_chat':
             return self._process_step_ai_chat(mail_channel)
         
@@ -37,7 +37,7 @@ class ChatbotScriptStep(models.Model):
             )
         return posted_message
     
-    # ✅ Thêm method để xử lý user input cho AI chat
+    #  Thêm method để xử lý user input cho AI chat
     def _process_answer(self, mail_channel, message_body):
         """Override để xử lý AI chat input"""
         if self.step_type == 'ai_chat':

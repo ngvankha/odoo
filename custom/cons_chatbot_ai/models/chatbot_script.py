@@ -1,4 +1,7 @@
 from odoo import fields, models, api
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class ChatbotScript(models.Model):
     _inherit = 'chatbot.script'
@@ -7,29 +10,52 @@ class ChatbotScript(models.Model):
     webhook_url = fields.Char(
         string='AI Webhook URL',
         help='URL endpoint for AI service integration (e.g., n8n webhook)',
-        default='https://n8n.bitech.vn/webhook/234fba59-05b4-47cb-9881-cbf39bbb6d05'
-    )
-    ai_timeout = fields.Integer(
-        string='AI Timeout (seconds)',
-        help='Timeout for AI service requests in seconds',
-        default=120
     )
     ai_enabled = fields.Boolean(
         string='Enable AI Integration',
         help='Enable AI chat functionality for this chatbot',
-        default=True
+        default=lambda self: self._get_default_ai_enabled()
     )
-    ai_error_message = fields.Text(
-        string='AI Error Message',
-        help='Message to display when AI service is unavailable',
-        default='I\'m having trouble connecting to my AI brain. Please try again later.',
-        translate=True
-    )
-    ai_session_field = fields.Selection([
-        ('channel_uuid', 'Channel UUID'),
-        ('session_id', 'Custom Session ID'),
-    ], string='Session ID Field', default='channel_uuid',
-       help='Field to use as session identifier for AI service')
+
+    def _get_default_ai_enabled(self):
+        """Get default AI enabled from system parameter"""
+        return self.env['ir.config_parameter'].sudo().get_param(
+            'cons_chatbot_ai.enabled_by_default', 'True'
+        ) == 'True'
+
+    def get_webhook_url(self):
+        """Get webhook URL with proper fallback logic"""
+        self.ensure_one()
+        
+        # 1.  Ưu tiên webhook_url riêng của chatbot (nếu có)
+        if self.webhook_url and self.webhook_url.strip():
+            _logger.info(f"🔍 Using chatbot-specific webhook URL: {self.webhook_url}")
+            return self.webhook_url.strip()
+            
+        # 2.  Fallback to system parameter  
+        system_url = self.env['ir.config_parameter'].sudo().get_param(
+            'cons_chatbot_ai.webhook_url'
+        )
+        if system_url and system_url.strip():
+            _logger.info(f"🔍 Using system default webhook URL: {system_url}")
+            return system_url.strip()
+            
+        # Log warning nếu không có URL nào
+        _logger.warning(f" No webhook URL configured for chatbot '{self.title}' (ID: {self.id})")
+        return False
+    
+    def validate_webhook_url(self):
+        """Validate if webhook URL is properly configured"""
+        self.ensure_one()
+        webhook_url = self.get_webhook_url()
+        if not webhook_url:
+            return False, "No webhook URL configured"
+        
+        # Basic URL validation
+        if not webhook_url.startswith(('http://', 'https://')):
+            return False, "Invalid URL format"
+            
+        return True, "URL is valid"
     
     @api.model
     def get_ai_config(self, script_id):
@@ -39,11 +65,9 @@ class ChatbotScript(models.Model):
             return {}
             
         return {
-            'webhook_url': script.webhook_url,
-            'timeout': script.ai_timeout,
+            'webhook_url': script.get_webhook_url(), 
             'enabled': script.ai_enabled,
-            'error_message': script.ai_error_message,
-            'session_field': script.ai_session_field,
+            'valid_url': script.validate_webhook_url()[0],
         }
     
     @api.depends('script_step_ids.step_type')
@@ -55,7 +79,7 @@ class ChatbotScript(models.Model):
                 'question_phone',
                 'free_input_single',
                 'free_input_multi',
-                'ai_chat',  # ✅ Thêm loại step AI Chat
+                'ai_chat',  # AI Chat
             ]
             welcome_steps = script.script_step_ids and script._get_welcome_steps()
             if welcome_steps and welcome_steps[-1].step_type == 'forward_operator':

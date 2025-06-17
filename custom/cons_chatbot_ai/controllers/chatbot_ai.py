@@ -19,24 +19,24 @@ class ChatbotAIController(http.Controller):
         ], limit=1)
         
         if not mail_channel:
-            _logger.error(f"❌ Channel not found: {channel_uuid}")
+            _logger.error(f" Channel not found: {channel_uuid}")
             return {'success': False, 'error': 'Channel not found'}
             
         if not mail_channel.chatbot_current_step_id:
-            _logger.error(f"❌ No current step for channel: {channel_uuid}")
+            _logger.error(f" No current step for channel: {channel_uuid}")
             return {'success': False, 'error': 'No current step'}
         
         _logger.info(f"🔍 Current step: {mail_channel.chatbot_current_step_id.step_type}")
         
         chatbot = mail_channel.chatbot_current_step_id.chatbot_script_id
         
-        # ✅ Lấy tin nhắn mới nhất của user
+        # Lấy tin nhắn mới nhất của user
         user_messages = mail_channel.message_ids.filtered(
             lambda message: message.author_id != chatbot.operator_partner_id
         )
         
         if not user_messages:
-            _logger.warning("⚠️ No user message found")
+            _logger.warning(" No user message found")
             return {'success': False, 'error': 'No user message found'}
         
         # Lấy message mới nhất
@@ -47,14 +47,14 @@ class ChatbotAIController(http.Controller):
         from odoo.tools import html2plaintext
         user_text = html2plaintext(user_text) if user_text else ""
         
-        _logger.info(f"🔍 User message: {user_text}")
+        _logger.info(f" User message: {user_text}")
         
         if not user_text.strip():
             return {'success': False, 'error': 'Empty user message'}
         
         try:
-            # ✅ Gửi đến n8n webhook
-            webhook_url = "https://n8n.bitech.vn/webhook/234fba59-05b4-47cb-9881-cbf39bbb6d05"
+            # Gửi đến n8n webhook
+            webhook_url = chatbot.get_webhook_url()
             
             payload = {
                 "chatInput": user_text,
@@ -62,12 +62,12 @@ class ChatbotAIController(http.Controller):
                 "userId": mail_channel.anonymous_name or "Anonymous"
             }
             
-            _logger.info(f"🔍 Sending to n8n: {payload}")
+            _logger.info(f" Sending to n8n: {payload}")
             
             response = requests.post(
                 webhook_url,
                 json=payload,
-                timeout=20,
+                timeout=120,
                 headers={'Content-Type': 'application/json'}
             )
             
@@ -76,7 +76,7 @@ class ChatbotAIController(http.Controller):
             
             _logger.info(f"🔍 N8N response: {ai_response_data}")
             
-            # ✅ Xử lý response từ n8n
+            # Xử lý response từ n8n
             ai_response_text = ""
             if isinstance(ai_response_data, dict):
                 ai_response_text = (
@@ -92,14 +92,14 @@ class ChatbotAIController(http.Controller):
             if not ai_response_text.strip():
                 ai_response_text = "I'm sorry, I couldn't generate a response. Please try again."
             
-            # ✅ Post bot reply
+            # Post bot reply
             from odoo.tools import plaintext2html
             posted_message = mail_channel._chatbot_post_message(
                 chatbot,
                 plaintext2html(ai_response_text)
             )
             
-            _logger.info(f"✅ AI Response posted: {ai_response_text}")
+            _logger.info(f" AI Response posted: {ai_response_text}")
             
             return {
                 'success': True,
@@ -108,8 +108,8 @@ class ChatbotAIController(http.Controller):
             }
             
         except requests.RequestException as e:
-            _logger.error(f"❌ N8N API Error: {str(e)}")
-            error_message = "I'm having trouble connecting to my AI brain. Please try again later."
+            _logger.error(f" N8N API Error: {str(e)}")
+            error_message = "I'm having trouble connecting to n8n. Please try again later."
             
             # Post error message
             posted_message = mail_channel._chatbot_post_message(
@@ -124,5 +124,6 @@ class ChatbotAIController(http.Controller):
             }
         
         except Exception as e:
-            _logger.error(f"❌ Unexpected error in AI chat: {str(e)}")
+            _logger.error(f" Unexpected error in AI chat: {str(e)}")
             return {'success': False, 'error': 'Unexpected error occurred'}
+        

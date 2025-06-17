@@ -9,6 +9,7 @@
     'depends': ['im_livechat'],
     'data': [
         'views/chatbot_script_views.xml',
+        'views/res_config_settings_views.xml',
         'security/ir.model.access.csv',
         'data/ir_config_parameter_data.xml', 
     ],
