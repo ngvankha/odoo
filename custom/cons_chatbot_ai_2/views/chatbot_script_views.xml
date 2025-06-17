@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="chatbot_script_view_form_inherit" model="ir.ui.view">
+            <field name="name">chatbot.script.view.form.inherit</field>
+            <field name="model">chatbot.script</field>
+            <field name="inherit_id" ref="im_livechat.chatbot_script_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Config">
+                        <group>
+                            <field name="webhook_url"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
