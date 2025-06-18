@@ -5,10 +5,5 @@
             <field name="key">cons_chatbot_ai.webhook_url</field>
             <field name="value">https://n8n.bitech.vn/webhook/234fba59-05b4-47cb-9881-cbf39bbb6d05</field>
         </record>
-
-        <record id="chatbot_ai_timeout" model="ir.config_parameter">
-            <field name="key">cons_chatbot_ai.timeout</field>
-            <field name="value">120</field>
-        </record>
     </data>
 </odoo>
