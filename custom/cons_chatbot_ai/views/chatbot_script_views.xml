@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="im_livechat.chatbot_script_view_form" />
             <field name="arch" type="xml">
                 <xpath expr="//notebook" position="inside">
-                    <page string="AI Configuration">
+                    <page string="RAG N8N Config">
                         <group>
                             <field name="ai_enabled" />
                             <field name="webhook_url"

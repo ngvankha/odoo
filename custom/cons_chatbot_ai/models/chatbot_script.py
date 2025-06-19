@@ -8,11 +8,11 @@ class ChatbotScript(models.Model):
     
     # AI Configuration fields
     webhook_url = fields.Char(
-        string='AI Webhook URL',
-        help='URL endpoint for AI service integration (e.g., n8n webhook)',
+        string='n8n Webhook URL',
+        help='URL endpoint for AI service integration n8n webhook',
     )
     ai_enabled = fields.Boolean(
-        string='Enable AI Integration',
+        string='Enable n8n Agent',
         help='Enable AI chat functionality for this chatbot',
         default=lambda self: self._get_default_ai_enabled()
     )

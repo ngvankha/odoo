@@ -92,18 +92,21 @@ class ChatbotAIController(http.Controller):
             if not ai_response_text.strip():
                 ai_response_text = "I'm sorry, I couldn't generate a response. Please try again."
             
+            # Format the AI response
+            formatted_response = self._format_ai_response(ai_response_text)
+            
             # Post bot reply
             from odoo.tools import plaintext2html
             posted_message = mail_channel._chatbot_post_message(
                 chatbot,
-                plaintext2html(ai_response_text)
+                formatted_response
             )
             
-            _logger.info(f" AI Response posted: {ai_response_text}")
+            _logger.info(f" AI Response posted: {formatted_response}")
             
             return {
                 'success': True,
-                'ai_response': ai_response_text,
+                'ai_response': formatted_response,
                 'posted_message': posted_message.message_format()[0] if posted_message else None
             }
             
@@ -126,4 +129,39 @@ class ChatbotAIController(http.Controller):
         except Exception as e:
             _logger.error(f" Unexpected error in AI chat: {str(e)}")
             return {'success': False, 'error': 'Unexpected error occurred'}
+    
+    def _format_ai_response(self, text):
+        """
+        Convert Markdown to HTML for proper chatbot display with bold formatting
+        """
+        import re
         
+        if not text:
+            return ""
+
+        # Escape HTML special characters first
+        text = (
+            text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+        )
+
+        # Headers: # Title => <strong>Title</strong>
+        text = re.sub(r'^#{1,6}\s+(.+)$', r'<strong>\1</strong>', text, flags=re.MULTILINE)
+
+        # Pattern 2: #03, #123 (không có space) => <strong>#03</strong>
+        text = re.sub(r'#(\d+)', r'<strong>\1</strong>', text)
+        
+        # Bold: **text** => <strong>text</strong>
+        text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
+
+        # Italic: *text* => <em>text</em> (avoid **bold** conflict)
+        text = re.sub(r'(?<!\*)\*(?!\*)(.*?)\*(?!\*)', r'<em>\1</em>', text)
+
+        # Convert newlines to <br> for HTML display
+        text = text.replace('\n', '<br>')
+
+        # Clean up multiple <br> tags
+        text = re.sub(r'(<br>){3,}', '<br><br>', text)
+
+        return text.strip()

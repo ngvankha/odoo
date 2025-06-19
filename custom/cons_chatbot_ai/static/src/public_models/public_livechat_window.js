@@ -83,7 +83,7 @@ registerModel({
                 if (this.messaging.publicLivechatGlobal.livechatButtonView.inputPlaceholder) {
                     return this.messaging.publicLivechatGlobal.livechatButtonView.inputPlaceholder;
                 }
-                return this.env._t("Say something");
+                return this.env._t("Nhấn enter để gửi câu hỏi");
             },
         }),
         publicLivechatGlobalOwner: one('PublicLivechatGlobal', {
