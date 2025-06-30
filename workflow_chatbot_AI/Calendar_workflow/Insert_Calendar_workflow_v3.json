@@ -1,0 +1,90 @@
+{
+  "name": "Insert Calendar workflow v3 (Complete Implementation)",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are an AI assistant that extracts calendar event information from Vietnamese user requests.\n\n## PURPOSE:\nExtract and structure calendar event data from natural language requests to create JSON objects for Odoo calendar events.\n\n## RULES:\n1. Always return a valid JSON object with the required fields.\n2. Extract date/time information and convert to proper format.\n3. Handle Vietnamese language inputs naturally.\n4. Set reasonable defaults for missing information.\n5. Current date context: June 30, 2025\n6. Default timezone: UTC+7 (Vietnam)\n\n## REQUIRED FIELDS:\n- name (string): Event title/subject\n- start (datetime): Start time in format 'YYYY-MM-DD HH:MM:SS' (UTC+7)\n- stop (datetime): End time in format 'YYYY-MM-DD HH:MM:SS' (UTC+7)\n- privacy (string): 'public', 'private', or 'confidential'\n- show_as (string): 'free' or 'busy'\n- active (boolean): always true\n- user_id (integer): always 1\n- duration (float): Duration in hours\n\n## OPTIONAL FIELDS:\n- description (string): Event description in HTML format\n- location (string): Event location\n- allday (boolean): true for all-day events\n- partner_ids (array): List of attendee partner IDs\n- categ_ids (array): List of category IDs\n- alarm_ids (array): List of alarm IDs\n\n## TIME HANDLING:\n- Parse Vietnamese time expressions (sáng, chiều, tối, etc.)\n- Convert relative dates (ngày mai, tuần sau, etc.)\n- Default duration: 1 hour if not specified\n- Handle all-day events appropriately\n\n## EXAMPLES:\n\nUser: \"Tạo sự kiện Họp nhóm vào ngày mai lúc 9h sáng\"\n→ {\n  \"name\": \"Họp nhóm\",\n  \"start\": \"2025-07-01 09:00:00\",\n  \"stop\": \"2025-07-01 10:00:00\",\n  \"duration\": 1.0,\n  \"active\": true,\n  \"user_id\": 1,\n  \"privacy\": \"public\",\n  \"show_as\": \"busy\",\n  \"allday\": false\n}\n\nUser: \"Tạo cuộc họp Design Review vào thứ 2 tuần sau từ 14:00 đến 16:00 tại phòng họp A\"\n→ {\n  \"name\": \"Design Review\",\n  \"start\": \"2025-07-07 14:00:00\",\n  \"stop\": \"2025-07-07 16:00:00\",\n  \"duration\": 2.0,\n  \"location\": \"phòng họp A\",\n  \"active\": true,\n  \"user_id\": 1,\n  \"privacy\": \"public\",\n  \"show_as\": \"busy\",\n  \"allday\": false\n}\n\nUser: \"Tạo sự kiện Training cả ngày vào 15/07/2025\"\n→ {\n  \"name\": \"Training\",\n  \"start\": \"2025-07-15 00:00:00\",\n  \"stop\": \"2025-07-15 23:59:59\",\n  \"duration\": 24.0,\n  \"active\": true,\n  \"user_id\": 1,\n  \"privacy\": \"public\",\n  \"show_as\": \"busy\",\n  \"allday\": true\n}\n\nReturn only the JSON object, no explanations or comments.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -20,
+        -180
+      ],
+      "id": "ai-agent-extract",
+      "name": "AI Agent - Extract Event Data"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "openai-model",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5GtUzKpHZpCsSRqz",
+          "name": "OpenAi account Bitech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Validate extracted event data and check for required fields."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        140,
+        80
+      ],
+      "id": "think-validation",
+      "name": "Think - Validation"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -260,
+        -180
+      ],
+      "id": "workflow-trigger",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse và validate JSON từ AI output\ntry {\n  const eventData = JSON.parse($input.first().json.output);\n  \n  // Validate required fields\n  const requiredFields = ['name', 'start', 'stop', 'privacy', 'show_as', 'active', 'user_id'];\n  for (const field of requiredFields) {\n    if (!eventData[field]) {\n      throw new Error(`Missing required field: ${field}`);\n    }\n  }\n  \n  // Function để chuyển UTC+7 về UTC (trừ 7 giờ)\n  function convertToUTC(timeString) {\n    const date = new Date(timeString + '+07:00'); // Thêm timezone +07:00\n    return date.toISOString().slice(0, 19).replace('T', ' '); // Format về YYYY-MM-DD HH:MM:SS\n  }\n  \n  // Convert start và stop time về UTC\n  if (eventData.start) {\n    eventData.start = convertToUTC(eventData.start);\n  }\n  if (eventData.stop) {\n    eventData.stop = convertToUTC(eventData.stop);\n  }\n  \n  // Tính duration nếu chưa có hoặc validate\n  if (eventData.start && eventData.stop) {\n    const startTime = new Date(eventData.start);\n    const stopTime = new Date(eventData.stop);\n    const calculatedDuration = (stopTime - startTime) / (1000 * 60 * 60); // Convert to hours\n    \n    if (!eventData.duration || Math.abs(eventData.duration - calculatedDuration) > 0.1) {\n      eventData.duration = calculatedDuration;\n    }\n  }\n  \n  // Validate duration > 0\n  if (eventData.duration <= 0) {\n    throw new Error('Duration must be greater than 0');\n  }\n  \n  // Set defaults cho các field optional\n  eventData.description = eventData.description || '';\n  eventData.location = eventData.location || '';\n  eventData.allday = eventData.allday || false;\n  \n  // Validate privacy values\n  const validPrivacy = ['public', 'private', 'confidential'];\n  if (!validPrivacy.includes(eventData.privacy)) {\n    eventData.privacy = 'public';\n  }\n  \n  // Validate show_as values\n  const validShowAs = ['free', 'busy'];\n  if (!validShowAs.includes(eventData.show_as)) {\n    eventData.show_as = 'busy';\n  }\n  \n  return {\n    success: true,\n    data: eventData,\n    message: 'Event data processed successfully'\n  };\n  \n} catch (error) {\n  return {\n    success: false,\n    error: error.message,\n    data: null\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        -180
+      ],
+      "id": "process-data",
+      "name": "Process & Validate Event Data"
+    },
+    {
+      "parameters": {
+        "conditions": {\n          "boolean": [\n            {\n              "id": "success-check",\n              "value1": "={{ $json.success }}",\n              "value2": true\n            }\n          ]\n        }\n      },\n      "type": "n8n-nodes-base.if",\n      "typeVersion": 2,\n      "position": [\n        580,\n        -180\n      ],\n      "id": "check-success",\n      "name": "Check Processing Success"\n    },\n    {\n      "parameters": {\n        "resource": "custom",\n        "operation": "create",\n        "customResource": "calendar.event",\n        "fieldsUi": {\n          "fieldValues": [\n            {\n              "fieldId": "name",\n              "fieldValue": "={{ $json.data.name }}"\n            },\n            {\n              "fieldId": "start",\n              "fieldValue": "={{ $json.data.start }}"\n            },\n            {\n              "fieldId": "stop",\n              "fieldValue": "={{ $json.data.stop }}"\n            },\n            {\n              "fieldId": "duration",\n              "fieldValue": "={{ $json.data.duration }}"\n            },\n            {\n              "fieldId": "active",\n              "fieldValue": "={{ $json.data.active }}"\n            },\n            {\n              "fieldId": "user_id",\n              "fieldValue": "={{ $json.data.user_id }}"\n            },\n            {\n              "fieldId": "privacy",\n              "fieldValue": "={{ $json.data.privacy }}"\n            },\n            {\n              "fieldId": "show_as",\n              "fieldValue": "={{ $json.data.show_as }}"\n            },\n            {\n              "fieldId": "description",\n              "fieldValue": "={{ $json.data.description }}"\n            },\n            {\n              "fieldId": "location",\n              "fieldValue": "={{ $json.data.location }}"\n            },\n            {\n              "fieldId": "allday",\n              "fieldValue": "={{ $json.data.allday }}"\n            }\n          ]\n        }\n      },\n      "type": "n8n-nodes-base.odoo",\n      "typeVersion": 2,\n      "position": [\n        780,\n        -300\n      ],\n      "id": "create-event",\n      "name": "Odoo - Create Calendar Event",\n      "credentials": {\n        "odooApi": {\n          "id": "YOUR_ODOO_CREDENTIAL_ID",\n          "name": "Odoo Connection"\n        }\n      }\n    },\n    {\n      "parameters": {\n        "jsCode": "// Format success response\nconst eventResult = $input.first().json;\nconst originalData = $('Check Processing Success').first().json.data;\n\n// Convert UTC time back to UTC+7 for display\nfunction convertToUTC7(utcTimeString) {\n  const utcDate = new Date(utcTimeString + 'Z'); // Add Z to indicate UTC\n  const utc7Date = new Date(utcDate.getTime() + (7 * 60 * 60 * 1000)); // Add 7 hours\n  return utc7Date.toISOString().slice(0, 19).replace('T', ' ');\n}\n\nreturn {\n  success: true,\n  message: `Đã tạo thành công sự kiện: ${originalData.name}`,\n  event_id: eventResult.id,\n  event_data: {\n    name: originalData.name,\n    start: convertToUTC7(originalData.start), // Display in UTC+7\n    stop: convertToUTC7(originalData.stop),   // Display in UTC+7\n    duration: originalData.duration,\n    location: originalData.location || '',\n    description: originalData.description || '',\n    privacy: originalData.privacy,\n    show_as: originalData.show_as,\n    allday: originalData.allday\n  },\n  odoo_url: `/web#id=${eventResult.id}&view_type=form&model=calendar.event`\n};"
+      },
+      "type": "n8n-nodes-base.code",\n      "typeVersion": 2,\n      "position": [\n        980,\n        -300\n      ],\n      "id": "format-success",\n      "name": "Format Success Response"\n    },\n    {\n      "parameters": {\n        "jsCode": "// Format error response\nconst errorData = $input.first().json;\n\nreturn {\n  success: false,\n  message: `Lỗi khi xử lý dữ liệu sự kiện: ${errorData.error}`,\n  error: errorData.error,\n  event_data: null\n};"
+      },
+n      "type": "n8n-nodes-base.code",\n      "typeVersion": 2,\n      "position": [\n        780,\n        -60\n      ],\n      "id": "format-error",\n      "name": "Format Error Response"\n    }\n  ],\n  "pinData": {\n    "When Executed by Another Workflow": [\n      {\n        "json": {\n          "query": "Tạo cuộc họp Design Review vào thứ 2 tuần sau từ 14:00 đến 16:00 tại phòng họp A"\n        }\n      }\n    ]\n  },\n  "connections": {\n    "AI Agent - Extract Event Data": {\n      "main": [\n        [\n          {\n            "node": "Process & Validate Event Data",\n            "type": "main",\n            "index": 0\n          }\n        ]\n      ]\n    },\n    "OpenAI Chat Model": {\n      "ai_languageModel": [\n        [\n          {\n            "node": "AI Agent - Extract Event Data",\n            "type": "ai_languageModel",\n            "index": 0\n          }\n        ]\n      ]\n    },\n    "Think - Validation": {\n      "ai_tool": [\n        [\n          {\n            "node": "AI Agent - Extract Event Data",\n            "type": "ai_tool",\n            "index": 0\n          }\n        ]\n      ]\n    },\n    "When Executed by Another Workflow": {\n      "main": [\n        [\n          {\n            "node": "AI Agent - Extract Event Data",\n            "type": "main",\n            "index": 0\n          }\n        ]\n      ]\n    },\n    "Process & Validate Event Data": {\n      "main": [\n        [\n          {\n            "node": "Check Processing Success",\n            "type": "main",\n            "index": 0\n          }\n        ]\n      ]\n    },\n    "Check Processing Success": {\n      "main": [\n        [\n          {\n            "node": "Odoo - Create Calendar Event",\n            "type": "main",\n            "index": 0\n          }\n        ],\n        [\n          {\n            "node": "Format Error Response",\n            "type": "main",\n            "index": 0\n          }\n        ]\n      ]\n    },\n    "Odoo - Create Calendar Event": {\n      "main": [\n        [\n          {\n            "node": "Format Success Response",\n            "type": "main",\n            "index": 0\n          }\n        ]\n      ]\n    },\n    "Format Success Response": {\n      "main": [\n        []\n      ]\n    },\n    "Format Error Response": {\n      "main": [\n        []\n      ]\n    }\n  },\n  "active": false,\n  "settings": {\n    "executionOrder": "v1"\n  },\n  "versionId": "complete-implementation-v3",\n  "meta": {\n    "templateCredsSetupCompleted": true,\n    "instanceId": "9f9d65b7f6f404998410a371fb43f955467295dc166afafec26133c7e2984438"\n  },\n  "id": "rCSNiTcs59lUBQ1z-v3",\n  "tags": []\n}

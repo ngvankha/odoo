@@ -1,0 +1,251 @@
+{
+  "name": "Test MCP query",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=## Final Reminders\nHere is the current date/time: {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        960,
+        60
+      ],
+      "id": "9db03cb6-3ba8-4213-b088-5a4c1fd3ae10",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        340
+      ],
+      "id": "54c4edef-ca8f-46d3-aa78-c16ab2e32086",
+      "name": "OpenAI Chat Model5",
+      "credentials": {
+        "openAiApi": {
+          "id": "5GtUzKpHZpCsSRqz",
+          "name": "OpenAi account Bitech"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        920,
+        340
+      ],
+      "id": "a669767c-b057-4ebf-a55e-06c921035852",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "Bszbhx2PiEmWAPyK",
+          "name": "Postgres account bitech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9a9a245e-f1a1-4282-bb02-a81ffe629f0f",
+              "name": "chatInput",
+              "value": "={{ $json?.chatInput || $json.body.chatInput }}",
+              "type": "string"
+            },
+            {
+              "id": "b80831d8-c653-4203-8706-adedfdb98f77",
+              "name": "sessionId",
+              "value": "={{ $json?.sessionId || $json.body.sessionId}}",
+              "type": "string"
+            },
+            {
+              "id": "aac02c1b-b32c-401b-aac5-2b1de07091b2",
+              "name": "$now",
+              "value": "={{ $now }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4fc80757-ee61-4058-b358-1fda0d6abbed",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        680,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "3e3e8fbd-607c-4109-bdf5-422c8138eb78",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1360,
+        60
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        460,
+        60
+      ],
+      "id": "e45f5adb-5278-45ab-9aca-511b134793fa",
+      "name": "When chat message received",
+      "webhookId": "db34e0c4-ac87-4736-9c50-af051a7805e6"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.bitech.vn/mcp/calendar/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        340
+      ],
+      "id": "c098f5c4-c42b-4436-a299-2406312f4df3",
+      "name": "MCP Celendar"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://n8n.bitech.vn/mcp/mcp_query/sse"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        340
+      ],
+      "id": "b57f0b68-c209-4478-822d-eb25641df2b3",
+      "name": "MCP query Postgres"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        340
+      ],
+      "id": "236e9cdf-2431-48a1-9c0e-1174317d3fbe",
+      "name": "Calculator"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Celendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP query Postgres": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6e5b050d-a666-4a76-83be-574941e34cdd",
+  "meta": {
+    "instanceId": "9f9d65b7f6f404998410a371fb43f955467295dc166afafec26133c7e2984438"
+  },
+  "id": "j7rXRUgMEwDh0a2Q",
+  "tags": []
+}

@@ -1,0 +1,372 @@
+{
+  "name": "Select Calendar workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are a PostgreSQL SQL query generator for Odoo's calendar_event table.\n\n## PURPOSE:\nOnly generate valid SQL SELECT queries to retrieve event information.\n\n## RULES:\n1. Only output raw SQL SELECT queries. Do not include explanations, comments, or formatting.\n2. Target table: \"calendar_event\"\n3. Always use double quotes for table and column names.\n4. Use ILIKE for text-based filters (e.g. searching by name or location).\n5. Use true/false for boolean values.\n6. Use TIMESTAMP literals in ISO format (e.g. '2025-07-01 08:00:00') when filtering by time.\n7. Always end the query with a semicolon.\n\n## SCHEMA:\n\"calendar_event\" Table:\n- \"id\" (bigint, Primary Key)\n- \"name\" (varchar)\n- \"start\" (timestamp without time zone)\n- \"stop\" (timestamp without time zone)\n- \"duration\" (float)\n- \"allday\" (boolean)\n- \"active\" (boolean)\n- \"user_id\" (integer)\n- \"location\" (varchar)\n- \"description\" (text)\n- \"privacy\" (varchar)\n- \"show_as\" (varchar)\n\n## EXAMPLES:\n\nUser: \"Get all events\"\n→ SELECT * FROM \"calendar_event\";\n\nUser: \"Get active events\"\n→ SELECT * FROM \"calendar_event\" WHERE \"active\" = true;\n\nUser: \"Thông tin về các cuộc họp\"\n→ SELECT * FROM \"calendar_event\" WHERE \"name\" ILIKE '%Họp%';\n\nUser: \"Get events starting after 2025-07-01\"\n→ SELECT * FROM \"calendar_event\" WHERE \"start\" >= '2025-07-01 00:00:00';\n\nUser: \"Get events between 2025-07-01 and 2025-07-02\"\n→ SELECT * FROM \"calendar_event\" WHERE \"start\" >= '2025-07-01 00:00:00' AND \"start\" < '2025-07-02 00:00:00';\n\nGenerate a valid SQL SELECT query based on the user's request.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        520,
+        -300
+      ],
+      "id": "36428daf-5bf0-4097-9613-51ef692d7e33",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        -40
+      ],
+      "id": "07f88480-5e3e-485e-b10f-e4347740a0d4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5GtUzKpHZpCsSRqz",
+          "name": "OpenAi account Bitech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.output }}",
+        "options": {
+          "largeNumbersOutput": "numbers"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        880,
+        -300
+      ],
+      "id": "8ae53cff-a7da-4e86-9f59-0ce1da9de74e",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ZG9LeT04CXxy2WYl",
+          "name": "Postgres gonchill"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Think if the ouputed query really matches the input message."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        700,
+        -40
+      ],
+      "id": "ac5505d4-7655-4bca-8df8-fb3c913f8e36",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        280,
+        -300
+      ],
+      "id": "ac5f756f-7efe-4743-9894-de80c4202f57",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tạo formatter định dạng theo giờ Việt Nam\nconst formatter = new Intl.DateTimeFormat('vi-VN', {\n  timeZone: 'Asia/Ho_Chi_Minh',\n  year: 'numeric',\n  month: '2-digit',\n  day: '2-digit',\n  hour: '2-digit',\n  minute: '2-digit',\n  hour12: false\n});\n\n// Parse từ UTC và format lại → rồi gán đè vào `start` và `stop`\nconst startUtc = new Date($input.first().json.start);\nconst stopUtc = new Date($input.first().json.stop);\n\n$input.first().json.start = formatter.format(startUtc);  // Ghi đè lại\n$input.first().json.stop = formatter.format(stopUtc);    // Ghi đè lại\n\nreturn $input.first().json\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        -300
+      ],
+      "id": "dbe3923f-ad17-4a44-affe-8f7c8659fc06",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3957295b-4e1f-49ff-b7f4-6469542d8b7c",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "0da0c23f-afd3-43d5-bfd2-0cea8d647a12",
+              "name": "message_main_attachment_id",
+              "value": "={{ $json.message_main_attachment_id }}",
+              "type": "string"
+            },
+            {
+              "id": "c70cc15f-8c8a-4a41-beeb-fad86a1c1cbd",
+              "name": "user_id",
+              "value": "={{ $json.user_id }}",
+              "type": "number"
+            },
+            {
+              "id": "9ec5a8cc-56f9-442c-a58a-2d1a6c5300de",
+              "name": "videocall_channel_id",
+              "value": "={{ $json.videocall_channel_id }}",
+              "type": "string"
+            },
+            {
+              "id": "46293e4d-d360-45c4-88c9-8e79b3c534a4",
+              "name": "res_id",
+              "value": "={{ $json.res_id }}",
+              "type": "string"
+            },
+            {
+              "id": "673089b7-4eb7-4332-adfa-c00a28b7c3fe",
+              "name": "res_model_id",
+              "value": "={{ $json.res_model_id }}",
+              "type": "string"
+            },
+            {
+              "id": "6b428bc2-8b18-4874-8992-332862074274",
+              "name": "recurrence_id",
+              "value": "={{ $json.recurrence_id }}",
+              "type": "string"
+            },
+            {
+              "id": "beee5c47-32dc-4517-90ea-eb46ed30156e",
+              "name": "create_uid",
+              "value": "={{ $json.create_uid }}",
+              "type": "number"
+            },
+            {
+              "id": "b00fdcca-4c03-4705-b4cf-a1f8a92cca43",
+              "name": "write_uid",
+              "value": "={{ $json.write_uid }}",
+              "type": "number"
+            },
+            {
+              "id": "d24d6017-42d9-4179-971a-a2f3e2c2006d",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "66b59de6-130a-4f99-9b52-5a52ab971d63",
+              "name": "location",
+              "value": "={{ $json.location }}",
+              "type": "string"
+            },
+            {
+              "id": "a3b27395-fcac-443a-bf94-ae6c54e576f4",
+              "name": "videocall_location",
+              "value": "={{ $json.videocall_location }}",
+              "type": "string"
+            },
+            {
+              "id": "4041d718-6a4e-426f-86f3-5376a50ebf86",
+              "name": "access_token",
+              "value": "={{ $json.access_token }}",
+              "type": "string"
+            },
+            {
+              "id": "fbc2b65a-d57f-4542-8e23-eea672bdda9e",
+              "name": "privacy",
+              "value": "={{ $json.privacy }}",
+              "type": "string"
+            },
+            {
+              "id": "c4535aa2-15c1-42c0-ac8f-fc9d09d88e7c",
+              "name": "show_as",
+              "value": "={{ $json.show_as }}",
+              "type": "string"
+            },
+            {
+              "id": "8db44b88-1871-46bc-a24a-b02f1af3a462",
+              "name": "res_model",
+              "value": "={{ $json.res_model }}",
+              "type": "string"
+            },
+            {
+              "id": "4e97ddb1-5c2b-473e-8a0b-938a59ac9271",
+              "name": "start_date",
+              "value": "={{ $json.start_date }}",
+              "type": "string"
+            },
+            {
+              "id": "b4a9f594-700b-4c31-8473-5708b4ae1cff",
+              "name": "stop_date",
+              "value": "={{ $json.stop_date }}",
+              "type": "string"
+            },
+            {
+              "id": "3066dd1b-06af-4aea-ad37-18890bf6f1b6",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "f37de8dd-2af0-461a-8398-4002a9ed5dcf",
+              "name": "active",
+              "value": "={{ $json.active }}",
+              "type": "boolean"
+            },
+            {
+              "id": "af5dc579-a537-49d6-bc30-aa3ff6effe55",
+              "name": "allday",
+              "value": "={{ $json.allday }}",
+              "type": "boolean"
+            },
+            {
+              "id": "50ac0e62-5d81-4bb6-b624-5099c48ba45d",
+              "name": "recurrency",
+              "value": "={{ $json.recurrency }}",
+              "type": "string"
+            },
+            {
+              "id": "8edeaa81-0a76-4376-9853-4bd8aacb3ef0",
+              "name": "follow_recurrence",
+              "value": "={{ $json.follow_recurrence }}",
+              "type": "boolean"
+            },
+            {
+              "id": "0a13d6bb-4c39-43a0-a881-eda7741d2b4e",
+              "name": "start",
+              "value": "={{ $json.start }}",
+              "type": "string"
+            },
+            {
+              "id": "27ae1b4c-9373-498b-a56c-5ab88710bb8d",
+              "name": "stop",
+              "value": "={{ $json.stop }}",
+              "type": "string"
+            },
+            {
+              "id": "f0240067-5a9b-476a-95f6-f9e71c5e45c1",
+              "name": "create_date",
+              "value": "={{ $json.create_date }}",
+              "type": "string"
+            },
+            {
+              "id": "2d139ff5-e387-48e0-a562-ba2ad6dda93e",
+              "name": "write_date",
+              "value": "={{ $json.write_date }}",
+              "type": "string"
+            },
+            {
+              "id": "2d922f49-d1ec-4fb5-a319-2ef6cf9b2978",
+              "name": "duration",
+              "value": "={{ $json.duration }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1100,
+        -300
+      ],
+      "id": "bc8ef2fc-9d34-463c-b57c-cb0b0f3bdb6f",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4035f369-186b-413e-8a4f-5521fb3c1a11",
+  "meta": {
+    "instanceId": "9f9d65b7f6f404998410a371fb43f955467295dc166afafec26133c7e2984438"
+  },
+  "id": "HT5fXjl1a5hMyPsx",
+  "tags": []
+}

@@ -1,0 +1,190 @@
+{
+  "name": "Insert Calendar workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are a PostgreSQL SQL query generator for Odoo's calendar_event table.\n\n## PURPOSE:\nOnly generate valid SQL INSERT queries to create new events.\n\n## RULES:\n1. Only generate raw SQL INSERT statements, no explanations or comments.\n2. Target table: \"calendar_event\"\n3. Always use double quotes for table and column names.\n4. Use true/false for boolean values.\n5. Use ILIKE only if string matching is involved, otherwise use exact values.\n6. Always include all NOT NULL fields: \n   - \"name\"\n   - \"start\"\n   - \"stop\"\n   - \"privacy\"\n   - \"show_as\"\n   - \"active\" must always be 'true'\n   - \"user_id\" must always be 1\n7. Always end queries with a semicolon.\n8. Valid values:\n   - \"privacy\": 'public', 'private', 'only internal users'\n   - \"show_as\": 'available', 'busy'\n\n## SCHEMA:\n\"calendar_event\" Table:\n- \"id\" (bigint, Primary Key)\n- \"name\" (varchar, NOT NULL)\n- \"start\" (timestamp without time zone, NOT NULL)\n- \"stop\" (timestamp without time zone, NOT NULL)\n- \"duration\" (float)\n- \"allday\" (boolean)\n- \"active\" (boolean, always true)\n- \"user_id\" (integer, always 1)\n- \"location\" (varchar)\n- \"description\" (text)\n- \"privacy\" (varchar, NOT NULL)\n- \"show_as\" (varchar, NOT NULL)\n\n## EXAMPLES:\n\nUser: \"Tạo sự kiện Họp nhóm vào ngày mai lúc 9h sáng\"\n→ INSERT INTO \"calendar_event\" (\n  \"name\", \"start\", \"stop\", \"duration\", \"active\", \"user_id\", \"privacy\", \"show_as\"\n) VALUES (\n  'Họp nhóm', NOW() + INTERVAL '1 day', NOW() + INTERVAL '1 day 1 hour', 1, true, 1, 'public', 'busy'\n);\n\nUser: \"Tạo event tên Demo từ 2025-07-01 08:00 đến 2025-07-01 09:30\"\n→ INSERT INTO \"calendar_event\" (\n  \"name\", \"start\", \"stop\", \"duration\", \"active\", \"user_id\", \"privacy\", \"show_as\"\n) VALUES (\n  'Demo', '2025-07-01 08:00:00', '2025-07-01 09:30:00', 1.5, true, 1, 'private', 'busy'\n);\n\nGenerate a valid SQL INSERT query based on the user's request.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -20,
+        -180
+      ],
+      "id": "6a4cf335-aa34-4d5e-9f88-1996269fb8a3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        80
+      ],
+      "id": "4df188ae-942e-497e-8da1-3b303be4028a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "5GtUzKpHZpCsSRqz",
+          "name": "OpenAi account Bitech"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.output }}",
+        "options": {
+          "largeNumbersOutput": "numbers"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        580,
+        -180
+      ],
+      "id": "620847fb-3769-49b4-8c84-97d0e9c6d60e",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ZG9LeT04CXxy2WYl",
+          "name": "Postgres gonchill"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Think if the ouputed query really matches the input message."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        140,
+        80
+      ],
+      "id": "487941de-e5e7-4ff0-8067-66cf13711abf",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -260,
+        -180
+      ],
+      "id": "d64ddcfa-e687-4b12-9814-fdb10d6da688",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lấy SQL query từ output\nconst sqlQuery = $input.first().json.output;\n\n// Regex để tìm và extract thời gian trong format 'YYYY-MM-DD HH:MM:SS'\nconst timeRegex = /'(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})'/g;\n\n// Function để chuyển UTC+7 về UTC (trừ 7 giờ)\nfunction convertToUTC(timeString) {\n  const date = new Date(timeString + '+07:00'); // Thêm timezone +07:00\n  return date.toISOString().slice(0, 19).replace('T', ' '); // Format về YYYY-MM-DD HH:MM:SS\n}\n\n// Replace tất cả thời gian trong SQL query\nconst updatedQuery = sqlQuery.replace(timeRegex, (match, timeString) => {\n  const utcTime = convertToUTC(timeString);\n  return `'${utcTime}'`;\n});\n\nreturn {\n  output: updatedQuery\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        -180
+      ],
+      "id": "a931baec-d63a-44e2-8622-76bfa1d9d03a",
+      "name": "Code"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "query": "INSERT INTO calendar_event (name, type, state, display_as, start, stop) VALUES ('Cuộc họp mới', 'Họp', 'Công khai', 'Bận', '2025-06-30 10:00:00', '2025-06-30 11:00:00')"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e3a9970d-1449-48e8-8f1e-680392d76b08",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9f9d65b7f6f404998410a371fb43f955467295dc166afafec26133c7e2984438"
+  },
+  "id": "rCSNiTcs59lUBQ1z",
+  "tags": []
+}

@@ -1,0 +1,350 @@
+{
+  "name": "MCP Query Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "description": "PostgreSQL query generator. Convert user requests into SELECT queries for the database table.",
+        "workflowId": {
+          "__rl": true,
+          "value": "oYogqCGacLsVqb18",
+          "mode": "list",
+          "cachedResultName": "select SQL Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        100
+      ],
+      "id": "1725e3e0-f4cb-4df7-a803-87579a119eec",
+      "name": "Select Postgresql Workflow Tool"
+    },
+    {
+      "parameters": {
+        "description": "PostgreSQL query generator. Convert user requests into UPDATE queries for the database table.",
+        "workflowId": {
+          "__rl": true,
+          "value": "XcJ7P7GTLaIJNgcw",
+          "mode": "list",
+          "cachedResultName": "update SQL Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        100
+      ],
+      "id": "9da38051-00f1-4f68-b341-2cda77ff8ca6",
+      "name": "Update Postgresql Workflow Tool"
+    },
+    {
+      "parameters": {
+        "description": "PostgreSQL query generator. Convert user requests into INSERT queries for the database table.",
+        "workflowId": {
+          "__rl": true,
+          "value": "OC5FoyTt7hppyVhs",
+          "mode": "list",
+          "cachedResultName": "Insert SQL Sub Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -140,
+        100
+      ],
+      "id": "4c9b7ce5-0a0b-476c-b2b0-9c32decd44bd",
+      "name": "Insert Postgresql Workflow Tool"
+    },
+    {
+      "parameters": {
+        "description": "PostgreSQL query generator. Convert user input into valid SQL DELETE statements that delete **only one matching row**.",
+        "workflowId": {
+          "__rl": true,
+          "value": "8oRwrS3rmSJuDy7Z",
+          "mode": "list",
+          "cachedResultName": "Delete SQL Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        280,
+        100
+      ],
+      "id": "a5345769-c645-467a-b32c-20667d185047",
+      "name": "Delete Postgresql Workflow Tool"
+    },
+    {
+      "parameters": {
+        "description": "Generates SQL INSERT queries to create new calendar events in the calendar_event table of Odoo",
+        "workflowId": {
+          "__rl": true,
+          "value": "rCSNiTcs59lUBQ1z",
+          "mode": "list",
+          "cachedResultName": "Insert Calendar workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        540,
+        100
+      ],
+      "id": "1ab34217-4dbe-4ac7-bd0a-f8379f771555",
+      "name": "Insert Tool"
+    },
+    {
+      "parameters": {
+        "description": "Generates SQL SELECT queries to retrieve data from the calendar_event table",
+        "workflowId": {
+          "__rl": true,
+          "value": "HT5fXjl1a5hMyPsx",
+          "mode": "list",
+          "cachedResultName": "Select Calendar workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        700,
+        100
+      ],
+      "id": "23a0f332-7905-4dd0-8ecb-2fa6f6f5e997",
+      "name": "Select Tool"
+    },
+    {
+      "parameters": {
+        "description": "Generates SQL UPDATE queries to modify existing events in the calendar_event table.",
+        "workflowId": {
+          "__rl": true,
+          "value": "vXwob3xepKBtG8ve",
+          "mode": "list",
+          "cachedResultName": "Update Calendar workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        100
+      ],
+      "id": "97121ba2-afc0-41f5-b281-9266f532a535",
+      "name": "Update Tool"
+    },
+    {
+      "parameters": {
+        "description": "Generates SQL DELETE queries to remove calendar events from the calendar_event table in Odoo. Requires a WHERE clause to ensure only specific records are deleted.",
+        "workflowId": {
+          "__rl": true,
+          "value": "TaA15dvdC7zVKOIN",
+          "mode": "list",
+          "cachedResultName": "Delete Calendar workflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        100
+      ],
+      "id": "4b682b06-9ca4-4647-a312-07cf2fdbfef5",
+      "name": "Delete Tool"
+    },
+    {
+      "parameters": {
+        "path": "calendar"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        580,
+        -140
+      ],
+      "id": "2ee528e8-3efd-4e26-b95e-e0989839d1ce",
+      "name": "MCP Server Calendar Odoo",
+      "webhookId": "02d1b0d7-0dbd-4b93-9e0a-acb794782421"
+    },
+    {
+      "parameters": {
+        "path": "mcp_query"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -140
+      ],
+      "id": "9493092d-a18a-487e-8ef3-8ef4f27aa3cb",
+      "name": "MCP Server SQL",
+      "webhookId": "4d0e6e25-a6ee-4de5-bbaa-c0f5d038f634"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Select Postgresql Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server SQL",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Postgresql Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server SQL",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Postgresql Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server SQL",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Postgresql Workflow Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server SQL",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Calendar Odoo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Calendar Odoo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Calendar Odoo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Calendar Odoo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "98d8f42f-4a9f-4294-9c24-9f2d5a0c8be1",
+  "meta": {
+    "instanceId": "9f9d65b7f6f404998410a371fb43f955467295dc166afafec26133c7e2984438"
+  },
+  "id": "eMlxlEkNu3tCjaeD",
+  "tags": []
+}
