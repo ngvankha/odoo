@@ -10,7 +10,10 @@ Simple Chatbot Module
 Module đơn giản hiển thị chatbot trong giao diện backend Odoo 16
     """,
     'depends': ['base', 'web'],
-    'data': [],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/res_config_settings_views.xml',
+    ],
     'assets': {
         'web.assets_backend': [
             'simple_chatbot/static/src/js/chatbot_widget.js',

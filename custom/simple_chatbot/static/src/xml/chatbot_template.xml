@@ -16,8 +16,14 @@
                 <span class="o_simple_chatbot_title">
                     <i class="fa fa-robot me-2"></i>
                     Simple Chatbot
+                    <span t-if="!state.isEnabled" class="badge bg-danger ms-2">Tắt</span>
+                    <span t-elif="!state.isConfigured" class="badge bg-warning ms-2">Chưa cấu hình</span>
+                    <span t-else="" class="badge bg-success ms-2">n8n</span>
                 </span>
                 <div class="o_simple_chatbot_controls">
+                    <button class="btn btn-sm btn-outline-light me-1" t-on-click="refreshConfiguration" title="Làm mới cấu hình">
+                        <i class="fa fa-sync"></i>
+                    </button>
                     <button class="btn btn-sm btn-outline-light me-1" t-on-click="clearChat" title="Xóa cuộc trò chuyện">
                         <i class="fa fa-refresh"></i>
                     </button>
@@ -29,11 +35,16 @@
             
             <div class="o_simple_chatbot_messages">
                 <div t-foreach="state.messages" t-as="message" t-key="message_index" 
-                     t-attf-class="o_simple_chatbot_message {{message.isBot ? 'o_bot_message' : 'o_user_message'}}">
+                     t-attf-class="o_simple_chatbot_message {{message.isBot ? 'o_bot_message' : 'o_user_message'}} {{message.isError ? 'o_error_message' : ''}} {{message.isLoading ? 'o_loading_message' : ''}}">
                     <div class="o_message_content">
-                        <i t-if="message.isBot" class="fa fa-robot me-2"></i>
+                        <i t-if="message.isBot &amp;&amp; message.isLoading" class="fa fa-spinner fa-spin me-2"></i>
+                        <i t-elif="message.isBot &amp;&amp; message.isError" class="fa fa-exclamation-triangle me-2"></i>
+                        <i t-elif="message.isBot" class="fa fa-robot me-2"></i>
                         <i t-else="" class="fa fa-user me-2"></i>
                         <span t-esc="message.text"></span>
+                    </div>
+                    <div t-if="message.timestamp &amp;&amp; !message.isLoading" class="o_message_time">
+                        <small t-esc="formatTime(message.timestamp)"></small>
                     </div>
                 </div>
             </div>
@@ -44,9 +55,13 @@
                            class="form-control" 
                            placeholder="Nhập tin nhắn của bạn..."
                            t-model="state.currentMessage"
-                           t-on-keypress="onKeyPress" />
-                    <button class="btn btn-primary" t-on-click="sendMessage">
-                        <i class="fa fa-paper-plane"></i>
+                           t-on-keypress="onKeyPress"
+                           t-att-disabled="state.isLoading or !state.isEnabled" />
+                    <button class="btn btn-primary" 
+                            t-on-click="sendMessage"
+                            t-att-disabled="state.isLoading or !state.isEnabled">
+                        <i t-if="state.isLoading" class="fa fa-spinner fa-spin"></i>
+                        <i t-else="" class="fa fa-paper-plane"></i>
                     </button>
                 </div>
             </div>

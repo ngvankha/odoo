@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit General Settings to add Simple Chatbot configuration -->
+        <record id="res_config_settings_view_form_inherit_simple_chatbot" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.simple.chatbot</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <div class="app_settings_block" data-string="Simple Chatbot" string="Simple Chatbot" data-key="simple_chatbot">
+                        <h2>Simple Chatbot Configuration</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <span class="o_form_label">Simple Chatbot Settings</span>
+                                    <div class="text-muted">Configure Simple Chatbot with n8n integration</div>
+
+                                    <div class="mt16">
+                                        <div class="o_checkbox_optional_field">
+                                            <field name="simple_chatbot_enabled"/>
+                                            <span class="o_light_label">Enable Simple Chatbot</span>
+                                        </div>
+                                        <div class="text-muted">Show Simple Chatbot button in systray</div>
+                                    </div>
+
+                                    <div class="mt16">
+                                        <span class="o_light_label">n8n Webhook URL</span>
+                                        <field name="simple_chatbot_webhook_url" 
+                                               placeholder="https://your-n8n-instance.com/webhook/chatbot"/>
+                                        <div class="text-muted">URL webhook của n8n để xử lý tin nhắn AI</div>
+                                    </div>
+
+                                    <div class="mt16">
+                                        <span class="o_light_label">Timeout (seconds)</span>
+                                        <field name="simple_chatbot_timeout"/>
+                                        <div class="text-muted">Thời gian chờ phản hồi từ n8n</div>
+                                    </div>
+
+                                    <div class="mt16">
+                                        <span class="o_light_label">Welcome Message</span>
+                                        <field name="simple_chatbot_welcome_message" 
+                                               widget="text"/>
+                                        <div class="text-muted">Tin nhắn chào mừng khi người dùng mở chatbot</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
