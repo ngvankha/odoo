@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    
+    <t t-name="simple_chatbot.ChatbotWidget" owl="1">
+        <!-- Nút mở chatbot trong systray -->
+        <div class="o_simple_chatbot_systray">
+            <button class="btn btn-secondary o_simple_chatbot_button" t-on-click="toggleChatbot">
+                <i class="fa fa-comments"></i>
+                <span class="d-none d-md-inline ms-1">Chatbot</span>
+            </button>
+        </div>
+
+        <!-- Cửa sổ chatbot -->
+        <div t-if="state.isOpen" class="o_simple_chatbot_window">
+            <div class="o_simple_chatbot_header">
+                <span class="o_simple_chatbot_title">
+                    <i class="fa fa-robot me-2"></i>
+                    Simple Chatbot
+                </span>
+                <div class="o_simple_chatbot_controls">
+                    <button class="btn btn-sm btn-outline-light me-1" t-on-click="clearChat" title="Xóa cuộc trò chuyện">
+                        <i class="fa fa-refresh"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-light" t-on-click="toggleChatbot" title="Đóng">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="o_simple_chatbot_messages">
+                <div t-foreach="state.messages" t-as="message" t-key="message_index" 
+                     t-attf-class="o_simple_chatbot_message {{message.isBot ? 'o_bot_message' : 'o_user_message'}}">
+                    <div class="o_message_content">
+                        <i t-if="message.isBot" class="fa fa-robot me-2"></i>
+                        <i t-else="" class="fa fa-user me-2"></i>
+                        <span t-esc="message.text"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="o_simple_chatbot_input">
+                <div class="input-group">
+                    <input type="text" 
+                           class="form-control" 
+                           placeholder="Nhập tin nhắn của bạn..."
+                           t-model="state.currentMessage"
+                           t-on-keypress="onKeyPress" />
+                    <button class="btn btn-primary" t-on-click="sendMessage">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
