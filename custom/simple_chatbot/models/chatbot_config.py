@@ -37,7 +37,6 @@ class ChatbotConfig(models.Model):
     def send_message_to_n8n(self, message, user_context=None):
         """Gửi tin nhắn đến n8n và nhận phản hồi"""
         config = self.get_active_config()
-        
         if not config['enabled']:
             return {
                 'success': False,
@@ -51,16 +50,19 @@ class ChatbotConfig(models.Model):
             }
         
         try:
+            # Tạo session ID duy nhất cho user
+            session_id = f"session_{self.env.user.id}_{fields.Datetime.now().strftime('%Y%m%d')}"
+            
             # Chuẩn bị dữ liệu gửi đến n8n
             payload = {
-                'message': message,
+                'chatInput': message,
+                'sessionId': session_id,
                 'user_id': self.env.user.id,
                 'user_name': self.env.user.name,
                 'timestamp': fields.Datetime.now().isoformat(),
                 'context': user_context or {}
             }
-            
-            # Gửi request đến n8n
+              # Gửi request đến n8n
             response = requests.post(
                 config['webhook_url'],
                 json=payload,
@@ -71,15 +73,23 @@ class ChatbotConfig(models.Model):
             if response.status_code == 200:
                 try:
                     response_data = response.json()
+                    
+                    # Xử lý response từ n8n với nhiều format khác nhau
+                    ai_response_text = self._extract_response_text(response_data)
+                    
                     return {
                         'success': True,
-                        'message': response_data.get('message', 'Phản hồi từ n8n'),
-                        'data': response_data
+                        'message': ai_response_text,
+                        'data': response_data,
+                        'raw_response': response_data
                     }
                 except json.JSONDecodeError:
+                    # Nếu không parse được JSON, trả về text response
+                    response_text = response.text or 'Đã nhận phản hồi từ n8n'
                     return {
                         'success': True,
-                        'message': response.text or 'Đã nhận phản hồi từ n8n'
+                        'message': response_text,
+                        'data': {'text': response_text}
                     }
             else:
                 return {
@@ -104,3 +114,59 @@ class ChatbotConfig(models.Model):
                 'success': False,
                 'message': f'Lỗi không xác định: {str(e)}'
             }
+    
+    def _extract_response_text(self, response_data):
+        """
+        Trích xuất text response từ n8n với nhiều format khác nhau
+        """
+        if isinstance(response_data, str):
+            return response_data
+        
+        if isinstance(response_data, dict):
+            # Thử các key phổ biến cho response
+            for key in ['response', 'answer', 'output', 'text', 'message', 'result', 'content']:
+                if key in response_data and response_data[key]:
+                    value = response_data[key]
+                    if isinstance(value, str):
+                        return value
+                    elif isinstance(value, dict) and 'text' in value:
+                        return value['text']
+        
+        # Nếu không tìm thấy format chuẩn, convert về string
+        return str(response_data) if response_data else 'Đã nhận phản hồi từ n8n'
+    
+    def _format_response_for_display(self, text):
+        """
+        Format response text for better display (convert Markdown to HTML)
+        """
+        import re
+        
+        if not text:
+            return ""
+
+        # Escape HTML special characters first
+        text = (
+            text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+        )
+
+        # Headers: # Title => <strong>Title</strong>
+        text = re.sub(r'^#{1,6}\s+(.+)$', r'<strong>\1</strong>', text, flags=re.MULTILINE)
+
+        # Pattern 2: #03, #123 (không có space) => <strong>#03</strong>
+        text = re.sub(r'#(\d+)', r'<strong>\1</strong>', text)
+        
+        # Bold: **text** => <strong>text</strong>
+        text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
+
+        # Italic: *text* => <em>text</em> (avoid **bold** conflict)
+        text = re.sub(r'(?<!\*)\*(?!\*)(.*?)\*(?!\*)', r'<em>\1</em>', text)
+
+        # Convert newlines to <br> for HTML display
+        text = text.replace('\n', '<br>')
+
+        # Clean up multiple <br> tags
+        text = re.sub(r'(<br>){3,}', '<br><br>', text)
+
+        return text.strip()

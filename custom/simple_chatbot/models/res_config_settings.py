@@ -27,7 +27,7 @@ class ResConfigSettings(models.TransientModel):
         help="Thời gian chờ phản hồi từ n8n (giây)"
     )
     
-    simple_chatbot_welcome_message = fields.Text(
+    simple_chatbot_welcome_message = fields.Char(
         string='Welcome Message',
         config_parameter='simple_chatbot.welcome_message',
         default="Xin chào! Tôi là chatbot AI của bạn. Tôi có thể giúp gì cho bạn?",
