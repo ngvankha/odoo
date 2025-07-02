@@ -6,7 +6,7 @@
         "promptType": "define",
         "text": "={{ $json.chatInput }}",
         "options": {
-          "systemMessage": "=## Final Reminders\nHere is the current date/time: {{ $now }}"
+          "systemMessage": "=You are an intelligent database assistant that helps users find, explore, and manage scheduling data from a structured database. You work with a specialized SQL sub-agent to retrieve and manipulate data efficiently.\n\n## Final Reminders\nHere is the current date/time: {{ $now }}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
