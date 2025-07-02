@@ -114,7 +114,7 @@ class SimpleChatbot extends Component {
                 });
 
                 // Xóa tin nhắn loading
-                const loadingIndex = this.state.messages.indexOf(loadingMessage);
+                const loadingIndex = this.state.messages.findIndex(msg => msg.isLoading === true);
                 if (loadingIndex > -1) {
                     this.state.messages.splice(loadingIndex, 1);
                 }
@@ -137,7 +137,7 @@ class SimpleChatbot extends Component {
             } else {
                 // Fallback message
                 setTimeout(() => {
-                    const loadingIndex = this.state.messages.indexOf(loadingMessage);
+                    const loadingIndex = this.state.messages.findIndex(msg => msg.isLoading === true);
                     if (loadingIndex > -1) {
                         this.state.messages.splice(loadingIndex, 1);
                     }
@@ -161,7 +161,7 @@ class SimpleChatbot extends Component {
             console.error("Error sending message:", error);
             
             // Xóa tin nhắn loading
-            const loadingIndex = this.state.messages.indexOf(loadingMessage);
+            const loadingIndex = this.state.messages.findIndex(msg => msg.isLoading === true);
             if (loadingIndex > -1) {
                 this.state.messages.splice(loadingIndex, 1);
             }
