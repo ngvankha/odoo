@@ -6,7 +6,7 @@
         <div class="o_simple_chatbot_systray">
             <button class="btn btn-secondary o_simple_chatbot_button" t-on-click="toggleChatbot">
                 <i class="fa fa-comments"></i>
-                <span class="d-none d-md-inline ms-1">Chatbot</span>
+                <span class="d-none d-md-inline ms-1">AI Assitant</span>
             </button>
         </div>
 
@@ -15,15 +15,16 @@
             <div class="o_simple_chatbot_header">
                 <span class="o_simple_chatbot_title">
                     <i class="fa fa-robot me-2"></i>
-                    Simple Chatbot
+                    AI Assitant Chatbot
                     <span t-if="!state.isEnabled" class="badge bg-danger ms-2">Tắt</span>
                     <span t-elif="!state.isConfigured" class="badge bg-warning ms-2">Chưa cấu hình</span>
-                    <span t-else="" class="badge bg-success ms-2">n8n</span>
+                    <!-- <span t-else="" class="badge bg-success ms-2">n8n</span> -->
                 </span>
                 <div class="o_simple_chatbot_controls">
-                    <button class="btn btn-sm btn-outline-light me-1" t-on-click="refreshConfiguration" title="Làm mới cấu hình">
+                    <!-- <button class="btn btn-sm btn-outline-light me-1"
+                    t-on-click="refreshConfiguration" title="Làm mới cấu hình">
                         <i class="fa fa-sync"></i>
-                    </button>
+                    </button> -->
                     <button class="btn btn-sm btn-outline-light me-1" t-on-click="clearChat" title="Xóa cuộc trò chuyện">
                         <i class="fa fa-refresh"></i>
                     </button>
@@ -41,7 +42,8 @@
                         <i t-elif="message.isBot &amp;&amp; message.isError" class="fa fa-exclamation-triangle me-2"></i>
                         <i t-elif="message.isBot" class="fa fa-robot me-2"></i>
                         <i t-else="" class="fa fa-user me-2"></i>
-                        <span t-esc="message.text"></span>
+                        <span t-if="message.hasMarkdown" t-out="message.formattedText"></span>
+                        <span t-else="" t-esc="message.text"></span>
                     </div>
                     <div t-if="message.timestamp &amp;&amp; !message.isLoading" class="o_message_time">
                         <small t-esc="formatTime(message.timestamp)"></small>

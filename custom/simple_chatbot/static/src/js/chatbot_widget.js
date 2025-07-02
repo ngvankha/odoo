@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, onMounted } from "@odoo/owl";
+import { Component, useState, onMounted, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 
@@ -122,9 +122,11 @@ class SimpleChatbot extends Component {
                 if (result.success) {
                     this.state.messages.push({
                         text: result.response,
+                        formattedText: markup(this.formatMarkdown(result.response)),
                         isBot: true,
                         timestamp: new Date(),
-                        data: result.data
+                        data: result.data,
+                        hasMarkdown: true
                     });
                 } else {
                     this.state.messages.push({
@@ -233,6 +235,41 @@ class SimpleChatbot extends Component {
             hour: '2-digit', 
             minute: '2-digit' 
         });
+    }
+
+    formatMarkdown(text) {
+        if (!text) return '';
+        
+        let formatted = text
+            // Thay thế **text** thành <strong>text</strong>
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            // Thay thế `code` thành <code>code</code>
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Tách thành các dòng để xử lý
+        const lines = formatted.split('\n');
+        const processedLines = lines.map(line => {            
+            // Xử lý danh sách có số thứ tự (1. **Tên:** value)
+            if (/^\d+\.\s+/.test(line)) {
+                return `<div class="numbered-item">${line}</div>`;
+            }
+            
+            // Xử lý bullet points với indent (   - **Key:** value)
+            if (/^\s*-\s+/.test(line)) {
+                const content = line.replace(/^\s*-\s+/, '');
+                return `<div class="bullet-item-indent">${content}</div>`;
+            }
+            
+            // Dòng trống
+            if (line.trim() === '') {
+                return '<div class="paragraph-break"></div>';
+            }
+            
+            // Dòng thông thường
+            return line;
+        });
+        
+        return processedLines.join('');
     }
 }
 
