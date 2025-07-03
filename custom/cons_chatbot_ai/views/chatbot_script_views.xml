@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Kế thừa form view gốc để chèn tab "AI Configuration" -->
+        <record id="view_chatbot_script_form_ai" model="ir.ui.view">
+            <field name="name">chatbot.script.view.form.ai.inherit</field>
+            <field name="model">chatbot.script</field>
+            <field name="inherit_id" ref="im_livechat.chatbot_script_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="RAG N8N Config">
+                        <group>
+                            <field name="ai_enabled" />
+                            <field name="webhook_url"
+                                attrs="{'invisible': [('ai_enabled', '=', False)]}" />
+
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_chatbot_script_step_ai,chatbot.script.step.ai,im_livechat.model_chatbot_script_step,base.group_public,1,0,0,0
+access_chatbot_script_ai,chatbot.script.ai,im_livechat.model_chatbot_script,im_livechat.im_livechat_group_manager,1,1,1,1
