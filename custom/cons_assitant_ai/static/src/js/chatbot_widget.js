@@ -1,0 +1,293 @@
+/** @odoo-module **/
+
+import { Component, useState, onMounted, markup } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
+
+class ConsAssistantAI extends Component {
+    setup() {
+        this.rpc = useService("rpc");
+        this.notification = useService("notification");
+        
+        this.state = useState({
+            isOpen: false,
+            messages: [],
+            currentMessage: "",
+            isLoading: false,
+            isConfigured: false,
+            isEnabled: true,
+            welcomeMessage: "Xin chào! Tôi là AI Assistant của bạn. Tôi có thể giúp gì cho bạn?"
+        });
+
+        onMounted(async () => {
+            await this.checkConfiguration();
+        });
+    }
+
+    async checkConfiguration() {
+        try {
+            const result = await this.rpc('/cons_assitant_ai/get_config', {});
+            this.state.isConfigured = result.config.webhook_configured;
+            this.state.isEnabled = result.config.enabled;
+            this.state.welcomeMessage = result.config.welcome_message;
+            
+            // Set initial message
+            if (this.state.isEnabled) {
+                if (this.state.isConfigured) {
+                    this.state.messages = [
+                        { 
+                            text: this.state.welcomeMessage, 
+                            isBot: true, 
+                            timestamp: new Date()
+                        }
+                    ];
+                } else {
+                    this.state.messages = [
+                        { 
+                            text: "⚠️ AI Assistant chưa được cấu hình. Vui lòng vào Settings → General Settings → Cons Assistant AI để cấu hình webhook n8n.", 
+                            isBot: true, 
+                            timestamp: new Date(),
+                            isError: true
+                        }
+                    ];
+                }
+            } else {
+                this.state.messages = [
+                    { 
+                        text: "❌ Cons Assistant AI đã bị tắt. Vui lòng vào Settings → General Settings → Cons Assistant AI để bật lại.", 
+                        isBot: true, 
+                        timestamp: new Date(),
+                        isError: true
+                    }
+                ];
+            }
+        } catch (error) {
+            console.error("Error checking configuration:", error);
+            this.state.isConfigured = false;
+            this.state.isEnabled = true;
+            this.state.messages = [
+                { 
+                    text: "❌ Lỗi khi tải cấu hình AI Assistant.", 
+                    isBot: true, 
+                    timestamp: new Date(),
+                    isError: true
+                }
+            ];
+        }
+    }
+
+    toggleAssistant() {
+        this.state.isOpen = !this.state.isOpen;
+    }
+
+    async sendMessage() {
+        if (!this.state.currentMessage.trim() || this.state.isLoading) {
+            return;
+        }
+
+        const userMessage = this.state.currentMessage.trim();
+        this.state.currentMessage = "";
+
+        // Thêm tin nhắn của người dùng
+        this.state.messages.push({
+            text: userMessage,
+            isBot: false,
+            timestamp: new Date()
+        });
+
+        // Hiển thị loading
+        this.state.isLoading = true;
+        const loadingMessage = {
+            text: "Đang suy nghĩ...",
+            isBot: true,
+            timestamp: new Date(),
+            isLoading: true
+        };
+        this.state.messages.push(loadingMessage);
+
+        try {
+            if (this.state.isEnabled && this.state.isConfigured) {
+                // Gửi đến n8n
+                const result = await this.rpc('/cons_assitant_ai/send_message', {
+                    message: userMessage,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Xóa tin nhắn loading
+                const loadingIndex = this.state.messages.findIndex(msg => msg.isLoading === true);
+                if (loadingIndex > -1) {
+                    this.state.messages.splice(loadingIndex, 1);
+                }
+
+                if (result.success) {
+                    this.state.messages.push({
+                        text: result.response,
+                        formattedText: markup(this.formatMarkdown(result.response)),
+                        isBot: true,
+                        timestamp: new Date(),
+                        data: result.data,
+                        hasMarkdown: true
+                    });
+                } else {
+                    this.state.messages.push({
+                        text: `❌ ${result.response}`,
+                        isBot: true,
+                        timestamp: new Date(),
+                        isError: true
+                    });
+                }
+            } else {
+                // Fallback message
+                setTimeout(() => {
+                    const loadingIndex = this.state.messages.findIndex(msg => msg.isLoading === true);
+                    if (loadingIndex > -1) {
+                        this.state.messages.splice(loadingIndex, 1);
+                    }
+                    
+                    let errorMessage = "⚠️ AI Assistant không khả dụng. ";
+                    if (!this.state.isEnabled) {
+                        errorMessage += "Vui lòng vào Settings → General Settings → Cons Assistant AI để bật AI Assistant.";
+                    } else if (!this.state.isConfigured) {
+                        errorMessage += "Vui lòng vào Settings → General Settings → Cons Assistant AI để cấu hình webhook n8n.";
+                    }
+                    
+                    this.state.messages.push({
+                        text: errorMessage,
+                        isBot: true,
+                        timestamp: new Date(),
+                        isError: true
+                    });
+                }, 1000);
+            }
+        } catch (error) {
+            console.error("Error sending message:", error);
+            
+            // Xóa tin nhắn loading
+            const loadingIndex = this.state.messages.findIndex(msg => msg.isLoading === true);
+            if (loadingIndex > -1) {
+                this.state.messages.splice(loadingIndex, 1);
+            }
+
+            this.state.messages.push({
+                text: `❌ Lỗi kết nối: ${error.message || 'Không thể kết nối đến server'}`,
+                isBot: true,
+                timestamp: new Date(),
+                isError: true
+            });
+
+            this.notification.add("Lỗi khi gửi tin nhắn đến AI Assistant", {
+                type: "danger"
+            });
+        } finally {
+            this.state.isLoading = false;
+        }
+    }
+
+    onKeyPress(ev) {
+        if (ev.key === 'Enter' && !ev.shiftKey) {
+            ev.preventDefault();
+            this.sendMessage();
+        }
+    }
+
+    clearChat() {
+        if (this.state.isEnabled) {
+            if (this.state.isConfigured) {
+                this.state.messages = [
+                    { 
+                        text: this.state.welcomeMessage, 
+                        isBot: true, 
+                        timestamp: new Date()
+                    }
+                ];
+            } else {
+                this.state.messages = [
+                    { 
+                        text: "⚠️ AI Assistant chưa được cấu hình. Vui lòng vào Settings → General Settings → Cons Assistant AI để cấu hình webhook n8n.", 
+                        isBot: true, 
+                        timestamp: new Date(),
+                        isError: true
+                    }
+                ];
+            }
+        } else {
+            this.state.messages = [
+                { 
+                    text: "❌ Cons Assistant AI đã bị tắt. Vui lòng vào Settings → General Settings → Cons Assistant AI để bật lại.", 
+                    isBot: true, 
+                    timestamp: new Date(),
+                    isError: true
+                }
+            ];
+        }
+    }
+
+    async refreshConfiguration() {
+        await this.checkConfiguration();
+        this.clearChat();
+        this.notification.add("Đã làm mới cấu hình AI Assistant", {
+            type: "success"
+        });
+    }
+
+    formatTime(timestamp) {
+        return timestamp.toLocaleTimeString('vi-VN', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+    }
+
+    formatMarkdown(text) {
+        if (!text) return '';
+        
+        let formatted = text
+            // Thay thế **text** thành <strong>text</strong>
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            // Thay thế `code` thành <code>code</code>
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Tách thành các dòng để xử lý
+        const lines = formatted.split('\n');
+        const processedLines = lines.map(line => {            
+            // Xử lý danh sách có số thứ tự (1. **Tên:** value)
+            if (/^\d+\.\s+/.test(line)) {
+                return `<div class="numbered-item">${line}</div>`;
+            }
+            
+            // Xử lý bullet points với indent (   - **Key:** value)
+            if (/^\s*-\s+/.test(line)) {
+                const content = line.replace(/^\s*-\s+/, '');
+                return `<div class="bullet-item-indent">${content}</div>`;
+            }
+            
+            // Dòng trống
+            if (line.trim() === '') {
+                return '<div class="paragraph-break"></div>';
+            }
+            
+            // Dòng thông thường
+            return line;
+        });
+        
+        return processedLines.join('');
+    }
+}
+
+ConsAssistantAI.template = "cons_assitant_ai.ChatbotWidget";
+
+// Đăng ký component như một systray item
+registry.category("systray").add("ConsAssistantAI", {
+    Component: ConsAssistantAI,
+    isDisplayed: async (env) => {
+        // Kiểm tra xem AI Assistant có được enable không
+        try {
+            const result = await env.services.rpc('/cons_assitant_ai/get_config', {});
+            return result.config.enabled;
+        } catch (error) {
+            console.error("Error checking AI Assistant enabled status:", error);
+            return true; // Default to true if error
+        }
+    }
+});
+
+export default ConsAssistantAI;

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit General Settings to add Cons Assistant AI configuration -->
+        <record id="res_config_settings_view_form_inherit_cons_assitant_ai" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.cons.assitant.ai</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <div class="app_settings_block" data-string="Cons Assistant AI"
+                        string="Cons Assistant AI" data-key="cons_assitant_ai">
+                        <h2>Assistant AI Configuration</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_right_pane">
+                                    <span class="o_form_label">Assistant AI Settings</span>
+                                    <div class="text-muted">Configure Cons Assistant AI with n8n
+                                        integration</div>
+
+                                    <div class="mt16">
+                                        <div class="o_checkbox_optional_field">
+                                            <field name="cons_assitant_ai_enabled" />
+                                            <span class="o_light_label">Enable Cons Assistant AI</span>
+                                        </div>
+                                        <div class="text-muted">Show Cons Assistant AI button in
+                                            systray</div>
+                                    </div>
+
+                                    <div class="mt16">
+                                        <span class="o_light_label">n8n Webhook URL</span>
+                                        <field name="cons_assitant_ai_webhook_url"
+                                            placeholder="https://your-n8n-instance.com/webhook/chatbot" />
+                                        <div class="text-muted">URL webhook của n8n để xử lý tin
+                                            nhắn AI</div>
+                                    </div>
+
+                                    <div class="mt16">
+                                        <span class="o_light_label">Timeout (seconds)</span>
+                                        <field name="cons_assitant_ai_timeout" />
+                                        <div class="text-muted">Thời gian chờ phản hồi từ n8n</div>
+                                    </div>
+
+                                    <div class="mt16">
+                                        <span class="o_light_label">Welcome Message</span>
+                                        <field name="cons_assitant_ai_welcome_message"
+                                            widget="text" />
+                                        <div class="text-muted">Tin nhắn chào mừng khi người dùng mở
+                                            AI Assistant</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
