@@ -92,6 +92,20 @@ class ConsAssistantAI extends Component {
 
     toggleAssistant() {
         this.state.isOpen = !this.state.isOpen;
+        
+        // Scroll to bottom when opening
+        if (this.state.isOpen) {
+            setTimeout(() => {
+                this.scrollToBottom();
+            }, 100);
+        }
+    }
+
+    scrollToBottom() {
+        const messagesContainer = document.querySelector('.o_cons_assitant_ai_messages');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     }
 
     async sendMessage() {
@@ -108,6 +122,11 @@ class ConsAssistantAI extends Component {
             isBot: false,
             timestamp: new Date()
         });
+
+        // Scroll to bottom after adding user message
+        setTimeout(() => {
+            this.scrollToBottom();
+        }, 50);
 
         // Hiển thị loading
         this.state.isLoading = true;
@@ -142,6 +161,11 @@ class ConsAssistantAI extends Component {
                         data: result.data,
                         hasMarkdown: true
                     });
+                    
+                    // Scroll to bottom after adding bot response
+                    setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 50);
                 } else {
                     this.state.messages.push({
                         text: `❌ ${result.response}`,
@@ -149,6 +173,11 @@ class ConsAssistantAI extends Component {
                         timestamp: new Date(),
                         isError: true
                     });
+                    
+                    // Scroll to bottom after adding error message
+                    setTimeout(() => {
+                        this.scrollToBottom();
+                    }, 50);
                 }
             } else {
                 // Fallback message

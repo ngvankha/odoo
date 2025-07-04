@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
-    
+
     <t t-name="cons_assitant_ai.ChatbotWidget" owl="1">
+        <!-- Floating Button -->
+        <div t-if="!state.isOpen" class="o_cons_assistant_ai_floating_button">
+            <button class="o_chatbot_toggle" 
+                    t-on-click="toggleAssistant"
+                    title="Mở AI Assistant">
+                <i class="fa fa-comments"></i>
+            </button>
+        </div>
+
         <!-- Nút mở AI Assistant trong systray -->
         <div class="o_cons_assitant_ai_systray">
             <button class="btn btn-secondary o_cons_assitant_ai_button" t-on-click="toggleAssistant">
