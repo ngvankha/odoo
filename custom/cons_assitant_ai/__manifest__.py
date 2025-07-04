@@ -5,8 +5,6 @@
     'category': 'Uncategorized',
     'summary': 'AI chatbot assistant in Odoo backend',
     'description': """
-            Cons Assistant AI Module
-            ========================
             Module AI chatbot assistant in Odoo backend
     """,
     'depends': ['base', 'web'],
