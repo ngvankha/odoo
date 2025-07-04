@@ -38,12 +38,19 @@
                 <div t-foreach="state.messages" t-as="message" t-key="message_index" 
                      t-attf-class="o_cons_assitant_ai_message {{message.isBot ? 'o_bot_message' : 'o_user_message'}} {{message.isError ? 'o_error_message' : ''}} {{message.isLoading ? 'o_loading_message' : ''}}">
                     <div class="o_message_content">
-                        <i t-if="message.isBot &amp;&amp; message.isLoading" class="fa fa-spinner fa-spin me-2"></i>
-                        <i t-elif="message.isBot &amp;&amp; message.isError" class="fa fa-exclamation-triangle me-2"></i>
-                        <i t-elif="message.isBot" class="fa fa-robot me-2"></i>
-                        <i t-else="" class="fa fa-user me-2"></i>
-                        <span t-if="message.hasMarkdown" t-out="message.formattedText"></span>
-                        <span t-else="" t-esc="message.text"></span>
+                        <div t-if="message.isBot" class="d-flex align-items-start">
+                            <i t-if="message.isLoading" class="fa fa-spinner fa-spin me-2"></i>
+                            <i t-elif="message.isError" class="fa fa-exclamation-triangle me-2"></i>
+                            <i t-else="" class="fa fa-robot me-2"></i>
+                            <span t-if="message.hasMarkdown" t-out="message.formattedText"></span>
+                            <span t-else="" t-esc="message.text"></span>
+                        </div>
+                        <div t-else="" class="d-flex align-items-start">
+                            <span t-if="message.hasMarkdown" t-out="message.formattedText"></span>
+                            <span t-else="" t-esc="message.text"></span>
+                            <img t-if="state.userAvatar" t-att-src="state.userAvatar" class="o_user_avatar_chatbot ms-2" t-att-alt="state.userName" t-att-title="state.userName" /> 
+                            <i t-else="" class="fa fa-user ms-2"></i>
+                        </div>
                     </div>
                     <div t-if="message.timestamp &amp;&amp; !message.isLoading" class="o_message_time">
                         <small t-esc="formatTime(message.timestamp)"></small>

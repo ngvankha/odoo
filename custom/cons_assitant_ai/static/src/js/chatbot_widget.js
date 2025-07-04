@@ -8,6 +8,7 @@ class ConsAssistantAI extends Component {
     setup() {
         this.rpc = useService("rpc");
         this.notification = useService("notification");
+        this.userService = useService("user");
         
         this.state = useState({
             isOpen: false,
@@ -16,12 +17,25 @@ class ConsAssistantAI extends Component {
             isLoading: false,
             isConfigured: false,
             isEnabled: true,
-            welcomeMessage: "Xin chào! Tôi là AI Assistant của bạn. Tôi có thể giúp gì cho bạn?"
+            welcomeMessage: "Xin chào! Tôi là AI Assistant của bạn. Tôi có thể giúp gì cho bạn?",
+            userAvatar: null,
+            userName: null
         });
 
         onMounted(async () => {
             await this.checkConfiguration();
+            this.getUserInfo();
         });
+    }
+
+    getUserInfo() {
+        // Lấy thông tin user hiện tại từ user service
+        if (this.userService && this.userService.userId) {
+            const userId = this.userService.userId;
+            this.state.userName = this.userService.name || "User";
+            // Tạo URL avatar từ user ID
+            this.state.userAvatar = `/web/image?model=res.users&field=avatar_1024&id=${userId}`;
+        }
     }
 
     async checkConfiguration() {
